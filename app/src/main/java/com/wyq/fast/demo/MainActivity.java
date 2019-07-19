@@ -186,7 +186,7 @@ public class MainActivity extends BaseAppCompatActivity {
                 entity.setLoanTerm(10);
                 // 设置贷款利率为：4.9
                 entity.setLoanRate(4.9f);
-                // 开始计算
+                // 准备开始计算
                 Calculator calculator;
                 // 还款总额(单位：万元)
                 calculator = new Calculator(new TotalRepayment());
