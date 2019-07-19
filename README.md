@@ -1,4 +1,4 @@
-# fast
+# fastbase
 
 ## 使用步骤
 ### 1. 在project的build.gradle添加如下代码
