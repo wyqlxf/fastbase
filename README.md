@@ -26,7 +26,7 @@ dependencies {
 You can download a jar from GitHub's [releases page](https://github.com/wyqlxf/fastbase/releases).<br>
 
 ## How do I use fastbase?
-See the [Demo](https://github.com/wyqlxf/fastbase/blob/master/app/src/main/java/com/wyq/fast/demo/MainActivity.java) file for details.
+See the [Demo](https://github.com/wyqlxf/fastbase/blob/master/app/src/main/java/com/wyq/fast/demo/MainActivity.java) file for details.<br>
 
 ## License
-MIT License, See the [LICENSE](https://github.com/wyqlxf/fastbase/blob/master/LICENSE) file for details.
+MIT License, See the [LICENSE](https://github.com/wyqlxf/fastbase/blob/master/LICENSE) file for details.<br>
