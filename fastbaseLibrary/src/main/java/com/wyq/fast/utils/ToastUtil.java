@@ -27,6 +27,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.wyq.fast.app.FastApp;
@@ -51,18 +52,22 @@ public final class ToastUtil {
      */
     public static void showShort(final CharSequence text) {
         if (FastApp.getContext() != null) {
-            // If it is the main thread
-            if (ThreadUtil.isMainThread()) {
-                showToast(text, Toast.LENGTH_SHORT);
+            if (!TextUtils.isEmpty(text)) {
+                // If it is the main thread
+                if (ThreadUtil.isMainThread()) {
+                    showToast(text, Toast.LENGTH_SHORT);
+                } else {
+                    Runnable callbackRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            // Perform tasks in the main thread
+                            showToast(text, Toast.LENGTH_SHORT);
+                        }
+                    };
+                    handler.post(callbackRunnable);
+                }
             } else {
-                Runnable callbackRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        // Perform tasks in the main thread
-                        showToast(text, Toast.LENGTH_SHORT);
-                    }
-                };
-                handler.post(callbackRunnable);
+                LogUtil.logWarn(ToastUtil.class, "text is null");
             }
         } else {
             LogUtil.logWarn(ToastUtil.class, "context is null");
@@ -76,18 +81,22 @@ public final class ToastUtil {
      */
     public static void showLong(final CharSequence text) {
         if (FastApp.getContext() != null) {
-            // If it is the main thread
-            if (ThreadUtil.isMainThread()) {
-                showToast(text, Toast.LENGTH_LONG);
+            if (!TextUtils.isEmpty(text)) {
+                // If it is the main thread
+                if (ThreadUtil.isMainThread()) {
+                    showToast(text, Toast.LENGTH_LONG);
+                } else {
+                    Runnable callbackRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            // Perform tasks in the main thread
+                            showToast(text, Toast.LENGTH_LONG);
+                        }
+                    };
+                    handler.post(callbackRunnable);
+                }
             } else {
-                Runnable callbackRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        // Perform tasks in the main thread
-                        showToast(text, Toast.LENGTH_LONG);
-                    }
-                };
-                handler.post(callbackRunnable);
+                LogUtil.logWarn(ToastUtil.class, "text is null");
             }
         } else {
             LogUtil.logWarn(ToastUtil.class, "context is null");

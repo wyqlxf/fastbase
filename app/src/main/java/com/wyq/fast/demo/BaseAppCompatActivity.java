@@ -35,12 +35,16 @@ import com.wyq.fast.activity.FastBaseAppCompatActivity;
 
 public class BaseAppCompatActivity extends FastBaseAppCompatActivity {
 
-    private Context mContext;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext = this;
+        context = this;
+    }
+
+    public Context getContext() {
+        return context;
     }
 
     @Override

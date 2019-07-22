@@ -116,6 +116,8 @@ public class MainActivity extends BaseAppCompatActivity {
 
         // 设置绑定
         ViewBindUtil.bind(this);
+        // 设置按钮文本
+        btnClick.setText(getContext().getResources().getString(R.string.btn_click_name));
 
         // 发送一个的空消息
         sendEmptyMessage(0);
