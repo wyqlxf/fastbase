@@ -1,15 +1,29 @@
 # fastbase
 
-## 使用步骤
-### 1. 在project的build.gradle添加如下代码
+fastbase is a powerful system for features in Android applications.<br>
+![image](https://github.com/wyqlxf/fastbase/blob/master/blob/master/image/fastbase_logo.png)
+<br>
 
-	allprojects {
-	    repositories {
-	        ...
-	        maven { url "https://jitpack.io" }
-	    }
-	}
-  
-### 2. 在Module的build.gradle添加依赖
+Fastbase is responsible for implementing most of the basic functions of android. It does some optimizations from performance and structure, and also avoids code duplication. You can simply call it in your code.<br>
 
+
+## Download
+Gradle:
+
+```groovy
+allprojects {
+    repositories {
+        ...
+        maven { url "https://jitpack.io" }
+    }
+}
+
+dependencies {
     implementation 'com.github.wyqlxf:fastbase:1.0.0'
+}
+```
+
+You can download a jar from GitHub's [releases page](https://github.com/wyqlxf/fastbase/releases).<br>
+
+## License
+MIT License, See the [LICENSE](https://github.com/wyqlxf/fastbase/blob/master/LICENSE) file for details.
