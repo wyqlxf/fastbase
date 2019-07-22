@@ -34,6 +34,8 @@ import com.wyq.fast.app.FastApp;
 
 import java.lang.reflect.Field;
 
+import androidx.annotation.StringRes;
+
 /**
  * Author: WangYongQi
  * Toast pop-up tool
@@ -52,6 +54,36 @@ public final class ToastUtil {
      */
     public static void showShort(final CharSequence text) {
         if (FastApp.getContext() != null) {
+            if (!TextUtils.isEmpty(text)) {
+                // If it is the main thread
+                if (ThreadUtil.isMainThread()) {
+                    showToast(text, Toast.LENGTH_SHORT);
+                } else {
+                    Runnable callbackRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            // Perform tasks in the main thread
+                            showToast(text, Toast.LENGTH_SHORT);
+                        }
+                    };
+                    handler.post(callbackRunnable);
+                }
+            } else {
+                LogUtil.logWarn(ToastUtil.class, "text is null");
+            }
+        } else {
+            LogUtil.logWarn(ToastUtil.class, "context is null");
+        }
+    }
+
+    /**
+     * Pop-up window showing short toast in any thread
+     *
+     * @param resId
+     */
+    public static void showShort(@StringRes final int resId) {
+        if (FastApp.getContext() != null) {
+            final CharSequence text = FastApp.getContext().getResources().getText(resId);
             if (!TextUtils.isEmpty(text)) {
                 // If it is the main thread
                 if (ThreadUtil.isMainThread()) {
@@ -102,6 +134,37 @@ public final class ToastUtil {
             LogUtil.logWarn(ToastUtil.class, "context is null");
         }
     }
+
+    /**
+     * Pop-up window showing long toast in any thread
+     *
+     * @param resId
+     */
+    public static void showLong(@StringRes final int resId) {
+        if (FastApp.getContext() != null) {
+            final CharSequence text = FastApp.getContext().getResources().getText(resId);
+            if (!TextUtils.isEmpty(text)) {
+                // If it is the main thread
+                if (ThreadUtil.isMainThread()) {
+                    showToast(text, Toast.LENGTH_LONG);
+                } else {
+                    Runnable callbackRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            // Perform tasks in the main thread
+                            showToast(text, Toast.LENGTH_LONG);
+                        }
+                    };
+                    handler.post(callbackRunnable);
+                }
+            } else {
+                LogUtil.logWarn(ToastUtil.class, "text is null");
+            }
+        } else {
+            LogUtil.logWarn(ToastUtil.class, "context is null");
+        }
+    }
+
 
     /**
      * Pop-up window showing toast
