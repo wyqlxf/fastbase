@@ -154,7 +154,11 @@ public class MCalculator implements Serializable {
             // Provident fund loan monthly interest rate
             final double monthRateProvident = entity.getProvidentRate() / (100 * 12);
             // Total amount of loans (ten thousand yuan, unified unit yuan)
-            final double totalLoan = entity.getTotalLoan();
+            final double mTotalLoan = entity.getTotalLoan() * 10000;
+            entity.setTotalLoan(mTotalLoan);
+            // Total amount of provident fund loans (ten thousand yuan, unified unit yuan)
+            final double mProvidentLoan = entity.getProvidentLoan() * 10000;
+            entity.setProvidentLoan(mProvidentLoan);
             for (int i = 0; i < months; i++) {
                 // Period
                 int number = (i + 1);
@@ -169,7 +173,7 @@ public class MCalculator implements Serializable {
                 // Commercial loan or provident fund loan
                 if (entity.getRepaymentWay() == CalculatorStrategy.RepaymentWay.AMOUNT) {
                     // Equal principal repayment method, monthly repayment principal (the same as the principal of each month, the interest is not the same)
-                    principal = totalLoan / months;
+                    principal = mTotalLoan / months;
                     interest = entity.getTotalLoan() * monthRate;
                     money = principal + interest;
                     remainingMoney = entity.getTotalLoan() - principal;
@@ -177,7 +181,7 @@ public class MCalculator implements Serializable {
                 } else {
                     // The same amount of principal and interest repayment method, calculate the total amount of monthly repayment (the monthly principal is not the same, the interest is not the same)
                     interest = remainingMoney * monthRate;
-                    money = (totalLoan * monthRate * Math.pow((1 + monthRate), months)) / (Math.pow((1 + monthRate), months) - 1);
+                    money = (mTotalLoan * monthRate * Math.pow((1 + monthRate), months)) / (Math.pow((1 + monthRate), months) - 1);
                     principal = money - interest;
                     remainingMoney = entity.getTotalLoan() - principal;
                     entity.setTotalLoan(remainingMoney);
@@ -195,7 +199,7 @@ public class MCalculator implements Serializable {
                 if (entity.getLoanType() == CalculatorStrategy.LoanType.COMBINATION) {
                     if (entity.getRepaymentWay() == CalculatorStrategy.RepaymentWay.AMOUNT) {
                         // Equal principal repayment method, monthly repayment principal (the same as the principal of each month, the interest is not the same)
-                        principalProvident = totalLoan / months;
+                        principalProvident = mProvidentLoan / months;
                         interestProvident = entity.getProvidentLoan() * monthRateProvident;
                         moneyProvident = principalProvident + interestProvident;
                         remainingMoneyProvident = entity.getProvidentLoan() - principalProvident;
@@ -203,7 +207,7 @@ public class MCalculator implements Serializable {
                     } else {
                         // The same amount of principal and interest repayment method, calculate the total amount of monthly repayment (the monthly principal is not the same, the interest is not the same)
                         interestProvident = remainingMoneyProvident * monthRateProvident;
-                        moneyProvident = (totalLoan * monthRateProvident * Math.pow((1 + monthRateProvident), months)) / (Math.pow((1 + monthRateProvident), months) - 1);
+                        moneyProvident = (mProvidentLoan * monthRateProvident * Math.pow((1 + monthRateProvident), months)) / (Math.pow((1 + monthRateProvident), months) - 1);
                         principalProvident = moneyProvident - interestProvident;
                         remainingMoneyProvident = entity.getProvidentLoan() - principalProvident;
                         entity.setProvidentLoan(remainingMoneyProvident);

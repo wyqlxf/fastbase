@@ -183,8 +183,8 @@ public class MainActivity extends BaseAppCompatActivity {
                 }
                 // 设置公积金贷款总额：100万(商贷和公积金贷款组合模式下使用)
                 entity.setProvidentLoan(90);
-                // 设置贷款类型为：商业贷款
-                entity.setLoanType(CalculatorStrategy.LoanType.BUSINESS);
+                // 设置贷款类型为：组合贷款
+                entity.setLoanType(CalculatorStrategy.LoanType.COMBINATION);
                 // 设置还款方式为：等额本金
                 entity.setRepaymentWay(CalculatorStrategy.RepaymentWay.AMOUNT);
                 // 设置贷款期限为：10年
