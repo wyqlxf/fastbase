@@ -161,7 +161,7 @@ public class MainActivity extends BaseAppCompatActivity {
         LogUtil.logDebug("聊天未读数:" + chatCount + "    新闻未读数:" + newsCount + "    总的未读数:" + allBadgeCount);
 
         // 获取App各种信息
-        LogUtil.logDebug(AppUtil.getPackageName() + AppUtil.getVersionName() + AppUtil.getVersionCode());
+        LogUtil.logDebug("包名：" + AppUtil.getPackageName() + "  版本名：" + AppUtil.getVersionName() + "  版本号：" + AppUtil.getVersionCode());
         // 清空数据或者卸载app会变
         LogUtil.logDebug(AppUtil.getAppUUID());
         // 清空数据或者卸载app不会改变
