@@ -44,6 +44,7 @@ import com.wyq.fast.interfaces.handler.OnHandlerListener;
 import com.wyq.fast.model.MCalculator;
 import com.wyq.fast.model.MCalculatorDetail;
 import com.wyq.fast.receiver.NetworkChangeReceiver;
+import com.wyq.fast.utils.AppUtil;
 import com.wyq.fast.utils.BadgeCountUtil;
 import com.wyq.fast.utils.LogUtil;
 import com.wyq.fast.utils.NotificationUtil;
@@ -158,6 +159,13 @@ public class MainActivity extends BaseAppCompatActivity {
         // 获取总的未读数
         int allBadgeCount = BadgeCountUtil.getAllBadgeCount();
         LogUtil.logDebug("聊天未读数:" + chatCount + "    新闻未读数:" + newsCount + "    总的未读数:" + allBadgeCount);
+
+        // 获取App各种信息
+        LogUtil.logDebug(AppUtil.getPackageName() + AppUtil.getVersionName() + AppUtil.getVersionCode());
+        // 清空数据或者卸载app会变
+        LogUtil.logDebug(AppUtil.getAppUUID());
+        // 清空数据或者卸载app不会改变
+        LogUtil.logDebug(AppUtil.getAppFixedUUID());
     }
 
     /**
@@ -242,7 +250,6 @@ public class MainActivity extends BaseAppCompatActivity {
         // 启动异步任务
         builder.start(exec, 100);
     }
-
 
     @ViewBindUtil.OnClick(R.id.btnClick)
     public void onClick(View view) {

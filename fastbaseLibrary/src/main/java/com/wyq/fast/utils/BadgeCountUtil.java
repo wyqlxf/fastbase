@@ -29,6 +29,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 
 import com.wyq.fast.app.FastApp;
+import com.wyq.fast.config.Config;
 
 import java.util.Map;
 
@@ -39,9 +40,6 @@ import java.util.Map;
 
 public final class BadgeCountUtil {
 
-    // Cache name
-    private final static String spName = "FastBadgeCount";
-
     /**
      * add the number of unread messages of the specified type
      *
@@ -50,7 +48,7 @@ public final class BadgeCountUtil {
      */
     public static void addBadgeCount(String key, int count) {
         count = count + getBadgeCount(key);
-        SPUtil.getInstance(spName).put(key, count);
+        SPUtil.getInstance(Config.SP_BADGE_COUNT_NAME).put(key, count);
         updateBadgeCount();
     }
 
@@ -61,7 +59,7 @@ public final class BadgeCountUtil {
      * @param count
      */
     public static void setBadgeCount(String key, int count) {
-        SPUtil.getInstance(spName).put(key, count);
+        SPUtil.getInstance(Config.SP_BADGE_COUNT_NAME).put(key, count);
         updateBadgeCount();
     }
 
@@ -72,7 +70,7 @@ public final class BadgeCountUtil {
      * @return
      */
     public static int getBadgeCount(String key) {
-        return SPUtil.getInstance(spName).getInt(key, 0);
+        return SPUtil.getInstance(Config.SP_BADGE_COUNT_NAME).getInt(key, 0);
     }
 
     /**
@@ -82,7 +80,7 @@ public final class BadgeCountUtil {
      */
     public static int getAllBadgeCount() {
         int count = 0;
-        Map<String, ?> map = SPUtil.getInstance(spName).getAll();
+        Map<String, ?> map = SPUtil.getInstance(Config.SP_BADGE_COUNT_NAME).getAll();
         if (map != null) {
             for (Object value : map.values()) {
                 if (value instanceof Integer) {
@@ -97,7 +95,7 @@ public final class BadgeCountUtil {
      * clear all types of unread messages
      */
     public static void clearAllBadgeCount() {
-        SPUtil.getInstance(spName).clear();
+        SPUtil.getInstance(Config.SP_BADGE_COUNT_NAME).clear();
         updateBadgeCount();
     }
 

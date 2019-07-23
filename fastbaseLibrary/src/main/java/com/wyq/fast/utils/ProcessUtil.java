@@ -26,6 +26,8 @@ package com.wyq.fast.utils;
 import android.app.ActivityManager;
 import android.content.Context;
 
+import com.wyq.fast.app.FastApp;
+
 import java.util.List;
 
 /**
@@ -45,7 +47,21 @@ public final class ProcessUtil {
     }
 
     /**
-     * return the current process name
+     * Return the current process name
+     *
+     * @return
+     */
+    public static String getCurProcessName() {
+        if (FastApp.getContext() != null) {
+            return getCurProcessName(FastApp.getContext());
+        } else {
+            LogUtil.logWarn(ProcessUtil.class, "context is null");
+            return "";
+        }
+    }
+
+    /**
+     * Return the current process name
      *
      * @return
      */
@@ -63,6 +79,7 @@ public final class ProcessUtil {
                 }
             }
         } catch (Exception ex) {
+            LogUtil.logWarn(ProcessUtil.class, ex.toString());
         }
         return "";
     }
