@@ -39,7 +39,6 @@ import com.wyq.fast.core.cipher.CipherFactory;
 import com.wyq.fast.interfaces.asynctask.OnCancelled;
 import com.wyq.fast.interfaces.asynctask.OnDoInBackground;
 import com.wyq.fast.interfaces.asynctask.OnPostExecute;
-import com.wyq.fast.interfaces.asynctask.OnPublishProgress;
 import com.wyq.fast.interfaces.calculator.CalculatorStrategy;
 import com.wyq.fast.interfaces.handler.OnHandlerListener;
 import com.wyq.fast.model.MCalculator;
@@ -73,7 +72,7 @@ public class MainActivity extends BaseAppCompatActivity {
     private Button btnClick;
 
     // 异步任务
-    private FastAsyncTask.Builder<String, String, String> builder;
+    private FastAsyncTask.Builder<Integer, String, String> builder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,13 +170,17 @@ public class MainActivity extends BaseAppCompatActivity {
             builder.cancel(true);
         }
         builder = FastAsyncTask.newBuilder();
-        builder.setDoInBackground(new OnDoInBackground<String, String, String>() {
+        builder.setDoInBackground(new OnDoInBackground<Integer, String>() {
             @Override
-            public String doInBackground(OnPublishProgress<String> publishProgress, String... strings) {
+            public String doInBackground(Integer... integers) {
                 // 房贷计算器，做房贷计算
                 MCalculator entity = new MCalculator();
                 // 设置总贷款：100万
-                entity.setTotalLoan(100);
+                if (integers != null && integers.length > 0) {
+                    entity.setTotalLoan(integers[0]);
+                } else {
+                    entity.setTotalLoan(100);
+                }
                 // 设置公积金贷款总额：100万(商贷和公积金贷款组合模式下使用)
                 entity.setProvidentLoan(90);
                 // 设置贷款类型为：商业贷款
@@ -237,7 +240,7 @@ public class MainActivity extends BaseAppCompatActivity {
         Executor exec = new ThreadPoolExecutor(20, 400, 10,
                 TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
         // 启动异步任务
-        builder.start(exec);
+        builder.start(exec, 100);
     }
 
 

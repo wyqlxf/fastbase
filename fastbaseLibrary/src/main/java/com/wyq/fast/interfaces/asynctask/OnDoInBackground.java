@@ -28,8 +28,8 @@ package com.wyq.fast.interfaces.asynctask;
  * Define an interface, AsyncTask listener doInBackground
  */
 
-public interface OnDoInBackground<Params, Progress, Result> {
+public interface OnDoInBackground<Params, Result> {
 
-    Result doInBackground(OnPublishProgress<Progress> publishProgress, Params... params);
+    Result doInBackground(Params... params);
 
 }

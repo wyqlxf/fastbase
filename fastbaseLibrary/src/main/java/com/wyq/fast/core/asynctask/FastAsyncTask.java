@@ -46,7 +46,7 @@ public class FastAsyncTask<Params, Progress, Result> extends AsyncTask<Params, P
     private OnCancelled mOnCancelled;
     private OnPostExecute<Result> mPostExecute;
     private OnProgressUpdate<Progress> mProgressUpdate;
-    private OnDoInBackground<Params, Progress, Result> mDoInBackground;
+    private OnDoInBackground<Params, Result> mDoInBackground;
 
     private FastAsyncTask() {
     }
@@ -61,7 +61,7 @@ public class FastAsyncTask<Params, Progress, Result> extends AsyncTask<Params, P
 
     @Override
     public Result doInBackground(Params... params) {
-        return (mDoInBackground != null) ? mDoInBackground.doInBackground(this, params) : null;
+        return (mDoInBackground != null) ? mDoInBackground.doInBackground(params) : null;
     }
 
     @Override
@@ -134,7 +134,7 @@ public class FastAsyncTask<Params, Progress, Result> extends AsyncTask<Params, P
             return this;
         }
 
-        public Builder<Params, Progress, Result> setDoInBackground(OnDoInBackground<Params, Progress, Result> doInBackground) {
+        public Builder<Params, Progress, Result> setDoInBackground(OnDoInBackground<Params, Result> doInBackground) {
             mAsyncTask.mDoInBackground = doInBackground;
             return this;
         }
