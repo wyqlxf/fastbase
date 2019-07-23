@@ -126,9 +126,7 @@ public abstract class FastBaseAppCompatActivity extends AppCompatActivity {
      * @param runnable
      */
     public void post(Runnable runnable) {
-        if (mHandler != null) {
-            mHandler.post(runnable);
-        }
+        getDefaultHandler().post(runnable);
     }
 
     /**
@@ -138,9 +136,7 @@ public abstract class FastBaseAppCompatActivity extends AppCompatActivity {
      * @param delayMillis
      */
     public void postDelayed(Runnable runnable, long delayMillis) {
-        if (mHandler != null) {
-            mHandler.postDelayed(runnable, delayMillis);
-        }
+        getDefaultHandler().postDelayed(runnable, delayMillis);
     }
 
     /**

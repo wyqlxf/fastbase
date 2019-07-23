@@ -125,9 +125,7 @@ public abstract class FastBaseActivity extends Activity {
      * @param runnable
      */
     public void post(Runnable runnable) {
-        if (mHandler != null) {
-            mHandler.post(runnable);
-        }
+        getDefaultHandler().post(runnable);
     }
 
     /**
@@ -137,9 +135,7 @@ public abstract class FastBaseActivity extends Activity {
      * @param delayMillis
      */
     public void postDelayed(Runnable runnable, long delayMillis) {
-        if (mHandler != null) {
-            mHandler.postDelayed(runnable, delayMillis);
-        }
+        getDefaultHandler().postDelayed(runnable, delayMillis);
     }
 
     /**
