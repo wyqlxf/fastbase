@@ -29,8 +29,8 @@ dependencies {
 
 ## 如何使用fastbase?
 ```java
-    FastApp.init(this); // 初始化SDK
-    FastApp.setLogEnabled(true); // 开启日志
+FastApp.init(this); // 初始化SDK
+FastApp.setLogEnabled(true); // 开启日志
 ```
 See the [Demo](https://github.com/wyqlxf/fastbase/blob/master/app/src/main/java/com/wyq/fast/demo/MainActivity.java) file for details.<br>
 
