@@ -6,7 +6,7 @@ fastbase是Android应用程序的一个强大基础库<br>
 ![image](https://github.com/wyqlxf/fastbase/blob/master/blob/master/image/fastbase_logo.png)
 <br>
 
-fastbase负责基础库的实现，它合理的封装了安卓开发中常用的一些方法，并解决开发中一些实际问题，避免在开发过程中重复造轮子，可以大大提高开发效率，您只需要简单的在代码中调用相对于的方法即可<br>
+fastbase负责基础库的实现，它合理的封装了安卓开发中常用的一些方法，并解决开发中一些实际问题，避免在开发过程中重复造轮子，可以大大提高开发效率，您只需要简单的在代码中调用相对于的方法即可。<br>
 
 
 ## 添加依赖
