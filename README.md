@@ -34,6 +34,8 @@ FastApp.init(this);
 FastApp.setLogEnabled(true);
 ```
 See the [Demo](https://github.com/wyqlxf/fastbase/blob/master/app/src/main/java/com/wyq/fast/demo/MainActivity.java) file for details.<br>
+<br>
+![image](https://github.com/wyqlxf/fastbase/blob/master/blob/master/image/demo_shot.png)
 
 ## License
 MIT License, See the [LICENSE](https://github.com/wyqlxf/fastbase/blob/master/LICENSE) file for details.<br>
