@@ -31,8 +31,6 @@ import android.os.Message;
 import android.view.View;
 
 import com.wyq.fast.core.asynctask.FastAsyncTask;
-import com.wyq.fast.core.cipher.Cipher;
-import com.wyq.fast.core.cipher.CipherFactory;
 import com.wyq.fast.demo.calculator.CalculatorActivity;
 import com.wyq.fast.demo.cipher.CipherActivity;
 import com.wyq.fast.interfaces.asynctask.OnCancelled;
@@ -43,13 +41,16 @@ import com.wyq.fast.receiver.NetworkChangeReceiver;
 import com.wyq.fast.utils.AppUtil;
 import com.wyq.fast.utils.BadgeCountUtil;
 import com.wyq.fast.utils.LogUtil;
+import com.wyq.fast.utils.NetWorkUtil;
 import com.wyq.fast.utils.NotificationUtil;
 import com.wyq.fast.utils.ObjectValueUtil;
 import com.wyq.fast.utils.PermissionUtil;
 import com.wyq.fast.utils.PixelXmlMarkUtil;
+import com.wyq.fast.utils.ProcessUtil;
 import com.wyq.fast.utils.RandomUtil;
 import com.wyq.fast.utils.SPUtil;
 import com.wyq.fast.utils.ScreenUtil;
+import com.wyq.fast.utils.ThreadUtil;
 import com.wyq.fast.utils.ToastUtil;
 import com.wyq.fast.utils.ViewBindUtil;
 import com.wyq.fast.utils.ViewBindUtil.OnClick;
@@ -93,111 +94,72 @@ public class MainActivity extends BaseAppCompatActivity {
             public void onHandleMessage(Message msg) {
                 switch (msg.what) {
                     case 0:
-                        LogUtil.logDebug("通知栏权限是否开启：" + NotificationUtil.isNotificationEnabled());
+                        ToastUtil.showShort("收到一个延迟的空消息");
                         break;
                 }
             }
         });
 
-        // 发送一个的空消息
-        sendEmptyMessage(0);
-
-        // 根据对象获取值
-        String title = ObjectValueUtil.getString(getIntent(), "title");
-        LogUtil.logDebug("title: " + title);
-
-        // 获取一个长度为16位的随机key(数字+字母)
-        final String randomKey = RandomUtil.getRandomNumberLetter(16);
-        // 字符串加密or解密
-        Cipher cipher = CipherFactory.create(Cipher.EncryptType.AES);
-        String data = cipher.encryptString(randomKey, "哈哈哈哈哈哈哈哈");
-        LogUtil.logDebug("加密数据: " + data);
-        data = cipher.decryptString(randomKey, data);
-        LogUtil.logDebug("解密数据: " + data);
-
-        // 在主线程中Toast弹窗，注意：如果在同一时间调用多次，只会弹窗显示最后一次
-        for (int i = 0; i < 10; i++) {
-            ToastUtil.showShort("欢迎进入主界面，计数：" + i);
-        }
-
-        // 轻量级缓存工具
-        final String spName = "Random";
-        // 保存随机key
-        SPUtil.getInstance(spName).put("random_key", randomKey);
-        // 日志输出上一次保存的随机key
-        LogUtil.logDebug("随机key：" + SPUtil.getInstance(spName).getString("random_key"));
-
-        // 添加聊天未读数
-        BadgeCountUtil.addBadgeCount("chat", 10);
-        int chatCount = BadgeCountUtil.getBadgeCount("chat");
-        // 设置新闻未读数
-        BadgeCountUtil.setBadgeCount("news", 20);
-        int newsCount = BadgeCountUtil.getBadgeCount("news");
-        // 获取总的未读数
-        int allBadgeCount = BadgeCountUtil.getAllBadgeCount();
-        LogUtil.logDebug("聊天未读数:" + chatCount + "    新闻未读数:" + newsCount + "    总的未读数:" + allBadgeCount);
-
-        // 获取App各种信息
-        LogUtil.logDebug("包名：" + AppUtil.getPackageName() + "  版本名：" + AppUtil.getVersionName() + "  版本号：" + AppUtil.getVersionCode());
-        // 清空数据或者卸载app会变
-        LogUtil.logDebug(AppUtil.getAppUUID());
-        // 清空数据或者卸载app不会改变
-        LogUtil.logDebug(AppUtil.getAppFixedUUID());
+        // 延时发送一个的空消息
+        sendEmptyMessageDelayed(0, 3000);
     }
 
-    /**
-     * 异步任务
-     */
-    private void onFastAsyncTask() {
-        // 判断当前异步任务是否不为空，并且正在运行
-        if (builder != null && builder.isRunning()) {
-            // 取消之前的异步任务
-            builder.cancel(true);
-        }
-        builder = FastAsyncTask.newBuilder();
-        builder.setDoInBackground(new OnDoInBackground<Integer, String>() {
-            @Override
-            public String doInBackground(Integer... integers) {
-                return "屏幕宽高：" + ScreenUtil.getScreenWidth() + " x " + ScreenUtil.getScreenHeight();
-            }
-        });
-        builder.setPostExecute(new OnPostExecute<String>() {
-            @Override
-            public void onPostExecute(String result) {
-                ToastUtil.showLong("异步任务已完成：" + result);
-                LogUtil.logDebug(getClass(), "异步任务已完成: " + result);
-            }
-        });
-        builder.setCancelled(new OnCancelled<String>() {
-            @Override
-            public void onCancelled(String result) {
-                ToastUtil.showShort("异步任务被取消：" + result);
-                LogUtil.logDebug(getClass(), "异步任务被取消: " + result);
-            }
-        });
-        // 允许在同一时刻有20个任务正在执行，并且最多能够存储400个任务
-        Executor exec = new ThreadPoolExecutor(20, 400, 10,
-                TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
-        // 启动异步任务
-        builder.start(exec, 100);
-    }
-
-    @OnClick({R.id.btnMortgageCalculator, R.id.btnCipher, R.id.btnPixelXmlMark})
+    @OnClick({R.id.btnUtils, R.id.btnMortgageCalculator, R.id.btnCipher, R.id.btnPixelXmlMark})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnUtils:
-                // 工具类演示
-                onFastAsyncTask();
+                // 判断当前异步任务是否不为空，并且正在运行
+                if (builder != null && builder.isRunning()) {
+                    // 取消之前的异步任务
+                    builder.cancel(true);
+                }
+                builder = FastAsyncTask.newBuilder();
+                builder.setDoInBackground(new OnDoInBackground<Integer, String>() {
+                    @Override
+                    public String doInBackground(Integer... integers) {
+                        try {
+                            ToastUtil.showShort("休眠3秒后请查看日志:TagFast，欢迎狂点");
+                            // 休眠3秒
+                            Thread.sleep(3000);
+                        } catch (Exception ex) {
+                        }
+                        return "" + System.currentTimeMillis();
+                    }
+                });
+                builder.setPostExecute(new OnPostExecute<String>() {
+                    @Override
+                    public void onPostExecute(String result) {
+                        LogUtil.logDebug("异步任务已完成: " + result);
+                        // 普通工具类演示
+                        utilToLog();
+                    }
+                });
+                builder.setCancelled(new OnCancelled<String>() {
+                    @Override
+                    public void onCancelled(String result) {
+                        LogUtil.logDebug("异步任务被取消: " + result);
+                    }
+                });
+                // 设置在同一时刻可以有30个任务正在执行，并且最多能够存储300个任务
+                Executor exec = new ThreadPoolExecutor(30, 300, 10,
+                        TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+                // 启动异步任务
+                builder.start(exec);
+                // 跳转工具类界面
                 break;
+
             case R.id.btnMortgageCalculator:
                 // 房贷计算器
                 startActivity(new Intent(this, CalculatorActivity.class));
                 break;
+
             case R.id.btnCipher:
                 // 字符串加密解密
                 startActivity(new Intent(this, CipherActivity.class));
                 break;
+
             case R.id.btnPixelXmlMark:
+                // 生成屏幕分辨率(这里需要注意,6.0以上需要申请权限)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !PermissionUtil.isHasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     ToastUtil.showShort("请先允许程序写入外部存储的权限！");
                 } else {
@@ -205,7 +167,6 @@ public class MainActivity extends BaseAppCompatActivity {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            // 生成屏幕分辨率(这里需要注意,6.0以上需要申请权限)
                             final String supportDimensions[] = {"240x320", "480x800", "720x1280", "1080x1920", "1080x2220", "1440x2560"};
                             /**
                              *
@@ -215,13 +176,158 @@ public class MainActivity extends BaseAppCompatActivity {
                              * @param 生成的像素大小是否支持负数
                              */
                             PixelXmlMarkUtil.markXmlSaveToSdCard(720, 1280, supportDimensions, true);
-                            // 弹窗提醒
+                            // 弹窗提醒 (允许在任意线程中弹窗)
                             ToastUtil.showShort("屏幕分辨率文件已生成完毕，并保存在设备存储卡res目录下");
                         }
                     }).start();
                 }
                 break;
         }
+    }
+
+    /**
+     * 调用工具类方法，并打印日志
+     */
+    private void utilToLog() {
+        StringBuffer buffer = new StringBuffer();
+        String log;
+        /**
+         * AppUtil类
+         */
+        log = "应用程序包名：" + AppUtil.getPackageName() + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+        log = "应用程序版本名：" + AppUtil.getVersionName() + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+        log = "应用程序版本号：" + AppUtil.getVersionCode() + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+        log = "清空数据或卸载应用才会发生变化的AppUUID：" + AppUtil.getAppUUID() + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+        log = "清空数据或卸载应用都不会发生变化的AppUUID：" + AppUtil.getAppFixedUUID() + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+
+        /**
+         * BadgeCountUtil类
+         */
+        // 清除所有的应用消息未读数
+        BadgeCountUtil.clearAllBadgeCount();
+        // 设置应用 “chat”类型的消息未读数量
+        BadgeCountUtil.setBadgeCount("chat", 1);
+        // 设置应用 “news”类型的消息未读数量
+        BadgeCountUtil.setBadgeCount("news", 2);
+        // 获取应用 “chat”类型的消息未读数量
+        final int chatCount = BadgeCountUtil.getBadgeCount("chat");
+        log = "“chat”类型的消息未读数量：" + chatCount + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+        // 获取应用 “news”类型的消息未读数量
+        final int newsCount = BadgeCountUtil.getBadgeCount("news");
+        log = "“news”类型的消息未读数量：" + newsCount + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+        // 获取应用总的未读消息数
+        final int totalCount = BadgeCountUtil.getAllBadgeCount();
+        log = "获取应用总的未读消息数：" + totalCount + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+        // 更新应用桌面消息未读数
+        BadgeCountUtil.updateBadgeCount();
+
+        /**
+         * NetWorkUtil
+         */
+        log = "获取当前网络类型：" + NetWorkUtil.getNetworkType() + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+        log = "当前是否有网络：" + NetWorkUtil.isNetworkConnected() + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+        log = "当前WIFI是否已打开：" + NetWorkUtil.isWifiEnabled() + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+        log = "当前网络是否为WIFI：" + NetWorkUtil.isWifiConnected() + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+        log = "当前网络是否设置了代理：" + NetWorkUtil.isWifiProxy() + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+
+        /**
+         * NotificationUtil类
+         */
+        log = "通知栏权限是否开启：" + NotificationUtil.isNotificationEnabled() + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+
+        /**
+         * ObjectValueUtil类
+         */
+        Bundle bundle = new Bundle();
+        bundle.putString("title", "this is bundle title");
+        final String title = ObjectValueUtil.getString(bundle, "title");
+        log = title + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+
+        /**
+         * ProcessUtil类
+         */
+        log = "当前是否为主进程: " + ProcessUtil.isMainProcess(getContext()) + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+        log = "获取当前进程名称: " + ProcessUtil.getCurProcessName() + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+
+        /**
+         * RandomUtil类
+         */
+        // 获取一个长度为16位的随机key(纯数字)
+        String randomKey = RandomUtil.getRandomNumber(16);
+        log = "随机key(纯数字): " + randomKey + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+        // 获取一个长度为32位的随机key(数字+字母)
+        randomKey = RandomUtil.getRandomNumberLetter(32);
+        log = "随机key(数字+字母): " + randomKey + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+
+        /**
+         * SPUtil类
+         */
+        final String spName = "Random";
+        // 保存随机key
+        SPUtil.getInstance(spName).put("random_key", randomKey);
+        // 获取随机Key
+        randomKey = SPUtil.getInstance(spName).getString("random_key");
+        log = "随机key：" + randomKey + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+
+        /**
+         * ScreenUtil类
+         */
+        log = "屏幕宽度：" + ScreenUtil.getScreenWidth() + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+        log = "屏幕高度：" + ScreenUtil.getScreenHeight() + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+        log = "状态栏高度：" + ScreenUtil.getStatusBarHeight() + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
+
+        /**
+         * ThreadUtil类
+         */
+        log = "当前是否为主线程: " + ThreadUtil.isMainThread() + "\n";
+        buffer.append(log);
+        LogUtil.logDebug(log);
     }
 
 }
