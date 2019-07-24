@@ -6,7 +6,7 @@ fastbase is a powerful base library for Android apps.<br>
 ![image](https://github.com/wyqlxf/fastbase/blob/master/blob/master/image/fastbase_logo.png)
 <br>
 
-Fastbase is responsible for the implementation of the base library, and solves some practical problems in project development, to avoid repetitive wheel building in process development, you can simply call it in the code.<br>
+fastbase is responsible for the implementation of the base library. It properly encapsulates some of the commonly used methods in Android development, and solves some practical problems in development, avoiding repetitive wheel making during the development process, which can greatly improve development efficiency. You only need to simply use the code. Call the relative method.<br>
 
 ## Download
 Gradle:
