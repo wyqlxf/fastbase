@@ -25,13 +25,13 @@ dependencies {
 }
 ```
 
-You can download a jar from GitHub's [releases page](https://github.com/wyqlxf/fastbase/releases).<br>
+您可以从GitHub发布页面[下载jar](https://github.com/wyqlxf/fastbase/releases).<br>
 
 ## 如何使用fastbase?
-    ``` java
+```java
     FastApp.init(this); // 初始化SDK
     FastApp.setLogEnabled(true); // 开启日志
-    ```
+```
 See the [Demo](https://github.com/wyqlxf/fastbase/blob/master/app/src/main/java/com/wyq/fast/demo/MainActivity.java) file for details.<br>
 
 ## 执照
