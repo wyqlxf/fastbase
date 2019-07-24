@@ -44,7 +44,7 @@
         <Button
             android:id="@+id/btnPixelXmlMark"
             style="@style/ButtonStyle"
-            android:text="生成自定义屏幕分辨率文件" />
+            android:text="生成自定义分辨率屏幕适配文件" />
 
         <View
             android:layout_width="match_parent"
