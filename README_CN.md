@@ -32,7 +32,9 @@ dependencies {
 FastApp.init(this); // 初始化SDK
 FastApp.setLogEnabled(true); // 开启日志
 ```
-有关详细信息，请参阅[演示文件](https://github.com/wyqlxf/fastbase/blob/master/app/src/main/java/com/wyq/fast/demo/MainActivity.java)<br>
+有关详细信息，请参阅[演示文件](https://github.com/wyqlxf/fastbase/blob/master/app/src/main/java/com/wyq/fast/demo/MainActivity.java)　点击下载[FastDemo.apk](https://github.com/wyqlxf/fastbase/tree/master/app/release/FastDemo.apk)<br>
+<br>
+![image](https://github.com/wyqlxf/fastbase/blob/master/blob/master/image/demo_shot.png)
 
 ## 执照
 MIT License, See the [LICENSE](https://github.com/wyqlxf/fastbase/blob/master/LICENSE) file for details.<br>
