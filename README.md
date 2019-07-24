@@ -1,6 +1,6 @@
 # fastbase
 
-[![Travis](https://img.shields.io/badge/miniSdk-14%2B-blue.svg)]()　[![Travis](https://img.shields.io/badge/author-wangyongqi-orange.svg)]()　[![Travis](https://img.shields.io/github/license/wyqlxf/fastbase.svg)]()
+[![Travis](https://img.shields.io/badge/miniSdk-14%2B-blue.svg)]()　[![Travis](https://img.shields.io/badge/author-wangyongqi-orange.svg)]()　[![Travis](https://img.shields.io/github/license/wyqlxf/fastbase.svg)](https://github.com/wyqlxf/fastbase/blob/master/LICENSE)
 
 fastbase is a powerful system for features in Android applications.<br>
 ![image](https://github.com/wyqlxf/fastbase/blob/master/blob/master/image/fastbase_logo.png)
