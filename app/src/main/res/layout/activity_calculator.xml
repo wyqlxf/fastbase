@@ -1,0 +1,594 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorDark">
+
+    <LinearLayout
+        android:id="@+id/llHead"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/head_bar_height"
+        android:layout_alignParentTop="true"
+        android:background="@color/colorPrimary"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="房贷计算器"
+            android:textColor="@color/colorYellow"
+            android:textSize="@dimen/title_font_size" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/vHeadLine"
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:layout_below="@+id/llHead"
+        android:background="@color/colorPrimaryDark" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/vHeadLine"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/layout_height"
+                android:layout_marginLeft="@dimen/edge_margin"
+                android:layout_marginTop="@dimen/edge_margin"
+                android:layout_marginRight="@dimen/edge_margin">
+
+                <TextView
+                    android:id="@+id/tvLoanTypeTab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:text="贷款类型"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/tab_font_size" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="@dimen/edge_margin"
+                    android:layout_toRightOf="@+id/tvLoanTypeTab"
+                    android:background="@drawable/edit_layout_color"
+                    android:orientation="horizontal"
+                    android:weightSum="3">
+
+                    <TextView
+                        android:id="@+id/tvTypeBusiness"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/gap"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_type_color"
+                        android:gravity="center"
+                        android:onClick="onClickType"
+                        android:text="商业"
+                        android:textColor="@color/colorYellow"
+                        android:textSize="@dimen/tab_font_size" />
+
+                    <TextView
+                        android:id="@+id/tvTypeProvident"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/gap"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:onClick="onClickType"
+                        android:text="公积金"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/tab_font_size" />
+
+                    <TextView
+                        android:id="@+id/tvTypeCombination"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/gap"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:onClick="onClickType"
+                        android:text="组合"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/tab_font_size" />
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/layout_height"
+                android:layout_marginLeft="@dimen/edge_margin"
+                android:layout_marginTop="@dimen/edge_margin"
+                android:layout_marginRight="@dimen/edge_margin">
+
+                <TextView
+                    android:id="@+id/tvRepaymentWayTab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:text="还款方式"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/tab_font_size" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="@dimen/edge_margin"
+                    android:layout_toRightOf="@+id/tvRepaymentWayTab"
+                    android:background="@drawable/edit_layout_color"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <TextView
+                        android:id="@+id/tvWayInterest"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/gap"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_type_color"
+                        android:gravity="center"
+                        android:onClick="onClickWay"
+                        android:text="等额本息"
+                        android:textColor="@color/colorYellow"
+                        android:textSize="@dimen/tab_font_size" />
+
+                    <TextView
+                        android:id="@+id/tvWayAmount"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/gap"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:onClick="onClickWay"
+                        android:text="等额本金"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/tab_font_size" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/layout_height"
+                android:layout_marginLeft="@dimen/edge_margin"
+                android:layout_marginTop="@dimen/edge_margin"
+                android:layout_marginRight="@dimen/edge_margin">
+
+                <TextView
+                    android:id="@+id/tvTotalLoanTab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:text="贷款总额"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/tab_font_size" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="@dimen/edge_margin"
+                    android:layout_toRightOf="@+id/tvTotalLoanTab"
+                    android:background="@drawable/edit_layout_color"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                        <EditText
+                            android:id="@+id/etTotalLoan"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:background="@color/colorTransparent"
+                            android:gravity="right|center_vertical"
+                            android:hint=""
+                            android:inputType="numberDecimal"
+                            android:maxLength="8"
+                            android:text=""
+                            android:textColor="@color/colorYellow"
+                            android:textColorHint="@color/colorTextHint"
+                            android:textCursorDrawable="@drawable/edit_cursor_color"
+                            android:textSize="@dimen/tab_font_size" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center_vertical"
+                            android:background="@color/colorTransparent"
+                            android:gravity="center"
+                            android:text="  万元    "
+                            android:textColor="@color/colorText"
+                            android:textSize="@dimen/tab_font_size" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/llProvidentLoan"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <EditText
+                            android:id="@+id/etProvidentLoan"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:background="@color/colorTransparent"
+                            android:gravity="right|center_vertical"
+                            android:hint="公积金贷款   "
+                            android:inputType="numberDecimal"
+                            android:maxLength="8"
+                            android:text=""
+                            android:textColor="@color/colorYellow"
+                            android:textColorHint="@color/colorTextHint"
+                            android:textCursorDrawable="@drawable/edit_cursor_color"
+                            android:textSize="@dimen/tab_font_size" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center_vertical"
+                            android:background="@color/colorTransparent"
+                            android:gravity="center"
+                            android:text="  万元    "
+                            android:textColor="@color/colorText"
+                            android:textSize="@dimen/tab_font_size" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="@dimen/edge_margin"
+                android:layout_marginTop="@dimen/edge_margin"
+                android:layout_marginRight="@dimen/edge_margin"
+                android:background="@color/colorLine" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/edge_margin"
+                android:layout_marginTop="@dimen/edge_margin"
+                android:layout_marginRight="@dimen/edge_margin">
+
+                <LinearLayout
+                    android:id="@+id/llLoanTerm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="贷款期限"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/tab_font_size" />
+
+                    <TextView
+                        android:id="@+id/tvLoanTerm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/edge_margin"
+                        android:text="20年"
+                        android:textColor="@color/colorYellow"
+                        android:textSize="@dimen/tab_font_size" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/sbLoanTerm"
+                    android:layout_alignParentLeft="true"
+                    android:text="1"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/tab_font_size" />
+
+                <SeekBar
+                    android:id="@+id/sbLoanTerm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/llLoanTerm"
+                    android:layout_marginLeft="@dimen/edge_margin"
+                    android:layout_marginTop="@dimen/edge_margin"
+                    android:layout_marginRight="@dimen/edge_margin"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:max="29"
+                    android:maxHeight="10dp"
+                    android:minHeight="5dp"
+                    android:paddingLeft="0dp"
+                    android:paddingRight="0dp"
+                    android:progress="19"
+                    android:progressDrawable="@drawable/seek_bar_color"
+                    android:thumb="@mipmap/ic_thumb_circle"
+                    android:thumbOffset="0dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/sbLoanTerm"
+                    android:layout_alignParentRight="true"
+                    android:text="30"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/tab_font_size" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="@dimen/edge_margin"
+                android:layout_marginTop="@dimen/edge_margin"
+                android:layout_marginRight="@dimen/edge_margin"
+                android:background="@color/colorLine" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="34dp"
+                android:layout_marginLeft="@dimen/edge_margin"
+                android:layout_marginTop="@dimen/edge_margin"
+                android:layout_marginRight="@dimen/edge_margin">
+
+                <TextView
+                    android:id="@+id/tvLoanRateTab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:gravity="center"
+                    android:text="贷款利率"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/tab_font_size" />
+
+                <LinearLayout
+                    android:id="@+id/llLoanRate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_toRightOf="@+id/tvLoanRateTab"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/etPercentage"
+                        android:layout_width="70dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="@dimen/edge_margin"
+                        android:layout_marginRight="10dp"
+                        android:background="@drawable/edit_layout_color"
+                        android:drawableRight="@mipmap/bg_percentage"
+                        android:gravity="center"
+                        android:inputType="numberDecimal"
+                        android:text="4.9"
+                        android:textColor="@color/colorYellow"
+                        android:textSize="@dimen/tab_font_size"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="X"
+                        android:textColor="@color/colorYellow"
+                        android:textSize="@dimen/tab_font_size" />
+
+                    <EditText
+                        android:id="@+id/etMultiple"
+                        android:layout_width="70dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="@dimen/edge_margin"
+                        android:background="@drawable/edit_layout_color"
+                        android:drawableRight="@mipmap/bg_multiple"
+                        android:gravity="center"
+                        android:inputType="numberDecimal"
+                        android:text="1"
+                        android:textColor="@color/colorYellow"
+                        android:textSize="@dimen/tab_font_size"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="="
+                        android:textColor="@color/colorYellow"
+                        android:textSize="@dimen/tab_font_size" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvLoanRate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/edge_margin"
+                    android:layout_toRightOf="@+id/llLoanRate"
+                    android:gravity="center"
+                    android:text="4.9%"
+                    android:textColor="@color/colorYellow"
+                    android:textSize="@dimen/tab_font_size" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/edge_margin"
+                android:text="当前年限基准利率：商业 4.9%   公积金 3.25%"
+                android:textColor="@color/colorText"
+                android:textSize="@dimen/tab_font_size" />
+
+            <Button
+                android:id="@+id/btnCalculator"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_margin="@dimen/edge_margin"
+                android:background="@drawable/btn_click_background"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:onClick="onClickCalculator"
+                android:text="开始计算"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/btn_font_size" />
+
+            <LinearLayout
+                android:id="@+id/llResult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/edge_margin"
+                    android:layout_marginTop="@dimen/edge_margin"
+                    android:layout_marginRight="@dimen/edge_margin"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="还款总额"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/tab_font_size" />
+
+                    <TextView
+                        android:id="@+id/tvTotalRepayment"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/edge_margin"
+                        android:text=""
+                        android:textColor="@color/colorYellow"
+                        android:textSize="@dimen/tab_font_size" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/edge_margin"
+                    android:layout_marginTop="@dimen/edge_margin"
+                    android:layout_marginRight="@dimen/edge_margin"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="贷款月数"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/tab_font_size" />
+
+                    <TextView
+                        android:id="@+id/tvLoanMonths"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/edge_margin"
+                        android:text=""
+                        android:textColor="@color/colorYellow"
+                        android:textSize="@dimen/tab_font_size" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/edge_margin"
+                    android:layout_marginTop="@dimen/edge_margin"
+                    android:layout_marginRight="@dimen/edge_margin"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="支付利息"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/tab_font_size" />
+
+                    <TextView
+                        android:id="@+id/tvPayInterest"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/edge_margin"
+                        android:text=""
+                        android:textColor="@color/colorYellow"
+                        android:textSize="@dimen/tab_font_size" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/edge_margin"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvMonthlyRepaymentTab"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="每月还款"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/tab_font_size" />
+
+                    <TextView
+                        android:id="@+id/tvMonthlyRepayment"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/edge_margin"
+                        android:text=""
+                        android:textColor="@color/colorYellow"
+                        android:textSize="@dimen/tab_font_size" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton xmlns:app="http://schemas.android.com/tools"
+        android:id="@+id/fabMore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="24dp"
+        android:layout_marginBottom="24dp"
+        android:onClick="onClickMore"
+        android:scaleType="center"
+        android:src="@drawable/ic_more_24dp"
+        android:visibility="gone"
+        app:borderWidth="@dimen/width0px"
+        app:elevation="3dp"
+        app:fabSize="mini" />
+
+</RelativeLayout>

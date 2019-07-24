@@ -23,40 +23,37 @@
  */
 package com.wyq.fast.demo;
 
+import android.Manifest;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.View;
-import android.widget.Button;
 
 import com.wyq.fast.core.asynctask.FastAsyncTask;
-import com.wyq.fast.core.calculator.Calculator;
-import com.wyq.fast.core.calculator.MonthlyRepayment;
-import com.wyq.fast.core.calculator.NumberOfLoans;
-import com.wyq.fast.core.calculator.PayInterest;
-import com.wyq.fast.core.calculator.TotalRepayment;
 import com.wyq.fast.core.cipher.Cipher;
 import com.wyq.fast.core.cipher.CipherFactory;
+import com.wyq.fast.demo.calculator.CalculatorActivity;
+import com.wyq.fast.demo.cipher.CipherActivity;
 import com.wyq.fast.interfaces.asynctask.OnCancelled;
 import com.wyq.fast.interfaces.asynctask.OnDoInBackground;
 import com.wyq.fast.interfaces.asynctask.OnPostExecute;
-import com.wyq.fast.interfaces.calculator.CalculatorStrategy;
 import com.wyq.fast.interfaces.handler.OnHandlerListener;
-import com.wyq.fast.model.MCalculator;
-import com.wyq.fast.model.MCalculatorDetail;
 import com.wyq.fast.receiver.NetworkChangeReceiver;
 import com.wyq.fast.utils.AppUtil;
 import com.wyq.fast.utils.BadgeCountUtil;
 import com.wyq.fast.utils.LogUtil;
 import com.wyq.fast.utils.NotificationUtil;
 import com.wyq.fast.utils.ObjectValueUtil;
+import com.wyq.fast.utils.PermissionUtil;
 import com.wyq.fast.utils.PixelXmlMarkUtil;
 import com.wyq.fast.utils.RandomUtil;
 import com.wyq.fast.utils.SPUtil;
 import com.wyq.fast.utils.ScreenUtil;
 import com.wyq.fast.utils.ToastUtil;
 import com.wyq.fast.utils.ViewBindUtil;
+import com.wyq.fast.utils.ViewBindUtil.OnClick;
 
-import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -69,9 +66,6 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends BaseAppCompatActivity {
 
-    @ViewBindUtil.BindView(R.id.btnClick)
-    private Button btnClick;
-
     // 异步任务
     private FastAsyncTask.Builder<Integer, String, String> builder;
 
@@ -79,25 +73,16 @@ public class MainActivity extends BaseAppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        // 设置绑定
+        ViewBindUtil.bind(this);
         // 注册网络变化监听
         registerNetworkListener(new NetworkChangeReceiver() {
             @Override
             protected void onNetworkChange(boolean isConnection) {
                 if (isConnection) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                // 这里先休眠三秒
-                                Thread.sleep(3000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            // 在子线程中Toast弹窗，注意：如果在同一时间调用多次，只会弹窗显示最后一次
-                            ToastUtil.showShort("当前有网络!");
-                        }
-                    }).start();
+                    ToastUtil.showShort("检测到当前网络状态：有网络!");
+                } else {
+                    ToastUtil.showShort("检测到当前网络状态：无网络!");
                 }
             }
         });
@@ -114,20 +99,12 @@ public class MainActivity extends BaseAppCompatActivity {
             }
         });
 
-        // 设置绑定
-        ViewBindUtil.bind(this);
-        // 设置按钮文本
-        btnClick.setText(getContext().getResources().getString(R.string.btn_click_name));
-
         // 发送一个的空消息
         sendEmptyMessage(0);
 
         // 根据对象获取值
         String title = ObjectValueUtil.getString(getIntent(), "title");
         LogUtil.logDebug("title: " + title);
-
-        // 生成屏幕分辨率(这里需要注意,6.0以上需要申请权限)
-        PixelXmlMarkUtil.markXmlSaveToSdCard(720, 1280, "480x800,720x1280,1080x1920", true);
 
         // 获取一个长度为16位的随机key(数字+字母)
         final String randomKey = RandomUtil.getRandomNumberLetter(16);
@@ -181,52 +158,6 @@ public class MainActivity extends BaseAppCompatActivity {
         builder.setDoInBackground(new OnDoInBackground<Integer, String>() {
             @Override
             public String doInBackground(Integer... integers) {
-                // 房贷计算器，做房贷计算
-                MCalculator entity = new MCalculator();
-                // 设置总贷款：100万
-                if (integers != null && integers.length > 0) {
-                    entity.setTotalLoan(integers[0]);
-                } else {
-                    entity.setTotalLoan(100);
-                }
-                // 设置公积金贷款总额：100万(商贷和公积金贷款组合模式下使用)
-                entity.setProvidentLoan(90);
-                // 设置贷款类型为：组合贷款
-                entity.setLoanType(CalculatorStrategy.LoanType.COMBINATION);
-                // 设置还款方式为：等额本金
-                entity.setRepaymentWay(CalculatorStrategy.RepaymentWay.AMOUNT);
-                // 设置贷款期限为：10年
-                entity.setLoanTerm(10);
-                // 设置贷款利率为：4.9
-                entity.setLoanRate(4.9f);
-                // 准备开始计算
-                Calculator calculator;
-                // 还款总额(单位：万元)
-                calculator = new Calculator(new TotalRepayment());
-                double totalRepayment = calculator.calculatorResult(entity);
-                // 贷款月数
-                calculator = new Calculator(new NumberOfLoans());
-                double numberOfLoans = calculator.calculatorResult(entity);
-                // 支付利息(单位：万元)
-                calculator = new Calculator(new PayInterest());
-                double payInterest = calculator.calculatorResult(entity);
-                // 每月还款 / 首月还款 (单位：万元，需要x10000转成元)
-                calculator = new Calculator(new MonthlyRepayment());
-                double monthlyRepayment = calculator.calculatorResult(entity);
-                LogUtil.logDebug("还款总额: " + totalRepayment + " 万元");
-                LogUtil.logDebug("贷款月数: " + numberOfLoans + " 月");
-                LogUtil.logDebug("支付利息: " + payInterest + " 万元");
-                LogUtil.logDebug("每月还款: " + monthlyRepayment + " 元");
-                // 输出更多详情
-                List<MCalculatorDetail> list = entity.getCalculatorDetails();
-                for (int i = 0; i < list.size(); i++) {
-                    // 输出： 期次、偿还本息、偿还本金、偿还利息、剩余本金
-                    LogUtil.logDebug("更多详情: " + list.get(i).toString());
-                }
-                try {
-                    Thread.sleep(3 * 1000);
-                } catch (Exception ex) {
-                }
                 return "屏幕宽高：" + ScreenUtil.getScreenWidth() + " x " + ScreenUtil.getScreenHeight();
             }
         });
@@ -251,14 +182,44 @@ public class MainActivity extends BaseAppCompatActivity {
         builder.start(exec, 100);
     }
 
-    @ViewBindUtil.OnClick(R.id.btnClick)
+    @OnClick({R.id.btnMortgageCalculator, R.id.btnCipher, R.id.btnPixelXmlMark})
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.btnClick:
-                // 启动异步任务
+            case R.id.btnUtils:
+                // 工具类演示
                 onFastAsyncTask();
-                // 清空所有未读数
-                BadgeCountUtil.clearAllBadgeCount();
+                break;
+            case R.id.btnMortgageCalculator:
+                // 房贷计算器
+                startActivity(new Intent(this, CalculatorActivity.class));
+                break;
+            case R.id.btnCipher:
+                // 字符串加密解密
+                startActivity(new Intent(this, CipherActivity.class));
+                break;
+            case R.id.btnPixelXmlMark:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !PermissionUtil.isHasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    ToastUtil.showShort("请先允许程序写入外部存储的权限！");
+                } else {
+                    // 已经有了读写权限，开启一个子线程进行XML文件生成
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // 生成屏幕分辨率(这里需要注意,6.0以上需要申请权限)
+                            final String supportDimensions[] = {"240x320", "480x800", "720x1280", "1080x1920", "1080x2220", "1440x2560"};
+                            /**
+                             *
+                             * @param UI效果图的基准宽度
+                             * @param UI效果图的基准高度
+                             * @param 自定义维度（输入需要适配的各个屏幕分辨率数组）
+                             * @param 生成的像素大小是否支持负数
+                             */
+                            PixelXmlMarkUtil.markXmlSaveToSdCard(720, 1280, supportDimensions, true);
+                            // 弹窗提醒
+                            ToastUtil.showShort("屏幕分辨率文件已生成完毕，并保存在设备存储卡res目录下");
+                        }
+                    }).start();
+                }
                 break;
         }
     }

@@ -40,7 +40,6 @@ public interface CalculatorStrategy {
         AMOUNT, INTEREST
     }
 
-    // 做计算
     double doCalculator(MCalculator entity);
 
 }

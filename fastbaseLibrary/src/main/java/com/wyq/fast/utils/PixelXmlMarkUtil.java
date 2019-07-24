@@ -51,10 +51,9 @@ public final class PixelXmlMarkUtil {
      * @param supportDimensions
      * @param isSupportNegative
      */
-    public static void markXmlSaveToSdCard(int baseWidth, int baseHeight, String supportDimensions, boolean isSupportNegative) {
+    public static void markXmlSaveToSdCard(int baseWidth, int baseHeight, String supportDimensions[], boolean isSupportNegative) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !PermissionUtil.isHasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             LogUtil.logWarn(PixelXmlMarkUtil.class, "No read and write permissions");
-            return;
         }
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             if (FastApp.getContext() != null) {
@@ -62,10 +61,9 @@ public final class PixelXmlMarkUtil {
             } else {
                 LogUtil.logWarn(PixelXmlMarkUtil.class, "context is null");
             }
-            if (!TextUtils.isEmpty(supportDimensions)) {
-                String dimensions[] = supportDimensions.split(",");
-                for (int i = 0; i < dimensions.length; i++) {
-                    String dimension = dimensions[i].trim();
+            if (supportDimensions != null && supportDimensions.length > 0) {
+                for (int i = 0; i < supportDimensions.length; i++) {
+                    String dimension = supportDimensions[i].trim();
                     if (!TextUtils.isEmpty(dimension) && dimension.contains("x")) {
                         String screenSize[] = dimension.split("x");
                         if (screenSize != null && screenSize.length == 2) {

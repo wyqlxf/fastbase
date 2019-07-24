@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#282828</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#141416</color>
+    <color name="colorWhite">#ffffff</color>
+    <color name="colorBlack">#000000</color>
+    <color name="colorDark">#282828</color>
+    <color name="colorTab">#222222</color>
+    <color name="colorText">#d9d9d9</color>
+    <color name="colorLayoutGap">#d6d6d6</color>
+    <color name="colorItemLayout">#e1e1e1</color>
+    <color name="colorItemText">#323232</color>
+    <color name="colorLine">#181818</color>
+    <color name="colorYellow">#ffb300</color>
+    <color name="colorTextHint">#5b430c</color>
+    <color name="colorTransparent">#00000000</color>
+    
+    <color name="ic_launcher_background">#2B2B2B</color>
 </resources>

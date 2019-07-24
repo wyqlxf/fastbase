@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="gap">3dp</dimen>
+    <dimen name="button_radius">6dp</dimen>
+    <dimen name="head_height">48dp</dimen>
+    <dimen name="button_height">40dp</dimen>
+    <dimen name="layout_height">40dp</dimen>
+    <dimen name="single_padding">4dp</dimen>
+    <dimen name="button_padding">8dp</dimen>
+    <dimen name="button_margin">8dp</dimen>
+    <dimen name="button_margin_arrow">10dp</dimen>
+    <dimen name="edge_margin">16dp</dimen>
+    <dimen name="status_bar_height">24dp</dimen>
+    <dimen name="head_bar_height">56dp</dimen>
+    <dimen name="list_item_height1">32dp</dimen>
+    <dimen name="list_item_height2">48dp</dimen>
+    <dimen name="list_item_height3">56dp</dimen>
+    <dimen name="list_item_height4">88dp</dimen>
+
+    <dimen name="title_font_size">18sp</dimen>
+    <dimen name="tab_font_size">14sp</dimen>
+    <dimen name="btn_font_size">16sp</dimen>
+
+</resources>

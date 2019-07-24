@@ -1,18 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorDark"
+    android:scrollbars="vertical">
 
-    <Button
-        android:id="@+id/btnClick"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:text=""
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/head_bar_height"
+            android:layout_gravity="center"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:text="fastbase - demo"
+            android:textColor="@color/colorYellow"
+            android:textSize="@dimen/title_font_size" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2px"
+            android:layout_below="@+id/llHead"
+            android:background="@color/colorPrimaryDark" />
+
+        <Button
+            android:id="@+id/btnUtils"
+            style="@style/ButtonStyle"
+            android:text="工具类演示" />
+
+        <Button
+            android:id="@+id/btnMortgageCalculator"
+            style="@style/ButtonStyle"
+            android:text="房贷计算器" />
+
+        <Button
+            android:id="@+id/btnCipher"
+            style="@style/ButtonStyle"
+            android:text="字符串加密解密" />
+
+        <Button
+            android:id="@+id/btnPixelXmlMark"
+            style="@style/ButtonStyle"
+            android:text="生成自定义屏幕分辨率文件" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/edge_margin" />
+
+    </LinearLayout>
+
+</ScrollView>

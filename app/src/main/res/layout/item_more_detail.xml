@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorLayoutGap"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/llItem"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/layout_height"
+        android:background="@color/colorItemLayout"
+        android:orientation="horizontal"
+        android:weightSum="5">
+
+        <TextView
+            android:id="@+id/tvItem1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.6"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="@color/colorItemText"
+            android:textSize="@dimen/tab_font_size" />
+
+        <TextView
+            android:id="@+id/tvItem2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.1"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="@color/colorItemText"
+            android:textSize="@dimen/tab_font_size" />
+
+        <TextView
+            android:id="@+id/tvItem3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.1"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="@color/colorItemText"
+            android:textSize="@dimen/tab_font_size" />
+
+        <TextView
+            android:id="@+id/tvItem4"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.1"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="@color/colorItemText"
+            android:textSize="@dimen/tab_font_size" />
+
+        <TextView
+            android:id="@+id/tvItem5"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.1"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="@color/colorItemText"
+            android:textSize="@dimen/tab_font_size" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/colorLayoutGap" />
+
+</LinearLayout>
