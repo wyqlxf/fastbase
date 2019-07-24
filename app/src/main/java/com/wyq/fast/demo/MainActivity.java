@@ -163,7 +163,7 @@ public class MainActivity extends BaseAppCompatActivity {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !PermissionUtil.isHasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     ToastUtil.showShort("请先允许程序写入外部存储的权限！");
                 } else {
-                    // 已经有了读写权限，开启一个子线程进行XML文件生成
+                    // 已经有了读写权限，开启一个子线程去制作xml文件，可以复制这些文件到你的主项目进行屏幕分辨率适配
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
