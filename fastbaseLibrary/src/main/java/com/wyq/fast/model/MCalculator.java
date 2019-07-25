@@ -35,7 +35,7 @@ import java.util.List;
  * Mortgage Calculator Entity Class
  */
 
-public class MCalculator implements Serializable {
+public class MCalculator<T> implements Serializable {
 
     // Total loan (unit: 10,000 yuan)
     private double totalLoan;
@@ -51,6 +51,9 @@ public class MCalculator implements Serializable {
     private double loanRate;
     // Provident fund interest rate, commercial loan and provident fund loan combination mode (currently fixed at 3.25)
     private double providentRate = 3.25;
+
+    // Custom entity object
+    private T entity;
 
     public double getTotalLoan() {
         return totalLoan;
@@ -106,6 +109,14 @@ public class MCalculator implements Serializable {
 
     public void setProvidentRate(double providentRate) {
         this.providentRate = providentRate;
+    }
+
+    public T getEntity() {
+        return entity;
+    }
+
+    public void setEntity(T entity) {
+        this.entity = entity;
     }
 
     @Override

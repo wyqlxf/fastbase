@@ -21,19 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.wyq.fast.config;
+package com.wyq.fast.interfaces.permission;
 
 /**
- * App configuration class
+ * Author: WangYongQi
+ * Define an interface for permission request observation
  */
 
-public final class Config {
+public interface OnPermissionListener {
 
-    // App UUID cache name
-    public final static String SP_APP_UUID_NAME = "FastAppUUID";
-    // Permission cache name
-    public final static String SP_PERMISSION_NAME = "Permission";
-    // Badge count cache name
-    public final static String SP_BADGE_COUNT_NAME = "FastBadgeCount";
+    void onPermissionComplete(int what);
+
+    void onPermissionTempReject(int what, String... permissions);
+
+    void onPermissionAlwaysReject(int what, String... permissions);
 
 }

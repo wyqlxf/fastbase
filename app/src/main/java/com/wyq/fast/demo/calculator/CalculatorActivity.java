@@ -274,6 +274,7 @@ public class CalculatorActivity extends BaseAppCompatActivity implements TextWat
                 providentLoan = Double.parseDouble(text);
             } catch (Exception ex) {
             }
+            // 商业贷款和公积金贷款只有利率不一样
             MCalculator entity = new MCalculator();
             entity.setTotalLoan(totalLoan);
             entity.setProvidentLoan(providentLoan);

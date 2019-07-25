@@ -24,19 +24,23 @@
 package com.wyq.fast.demo;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
+import android.provider.Settings;
 import android.view.View;
 
 import com.wyq.fast.core.asynctask.FastAsyncTask;
+import com.wyq.fast.core.permission.FastPermission;
 import com.wyq.fast.demo.calculator.CalculatorActivity;
 import com.wyq.fast.demo.cipher.CipherActivity;
 import com.wyq.fast.interfaces.asynctask.OnCancelled;
 import com.wyq.fast.interfaces.asynctask.OnDoInBackground;
 import com.wyq.fast.interfaces.asynctask.OnPostExecute;
 import com.wyq.fast.interfaces.handler.OnHandlerListener;
+import com.wyq.fast.interfaces.permission.OnPermissionListener;
 import com.wyq.fast.receiver.NetworkChangeReceiver;
 import com.wyq.fast.utils.AppUtil;
 import com.wyq.fast.utils.BadgeCountUtil;
@@ -44,7 +48,6 @@ import com.wyq.fast.utils.LogUtil;
 import com.wyq.fast.utils.NetWorkUtil;
 import com.wyq.fast.utils.NotificationUtil;
 import com.wyq.fast.utils.ObjectValueUtil;
-import com.wyq.fast.utils.PermissionUtil;
 import com.wyq.fast.utils.PixelXmlMarkUtil;
 import com.wyq.fast.utils.ProcessUtil;
 import com.wyq.fast.utils.RandomUtil;
@@ -60,15 +63,21 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+
 /**
  * Author: WangYongQi
  * main activity of this sample
  */
 
-public class MainActivity extends BaseAppCompatActivity {
+public class MainActivity extends BaseAppCompatActivity implements OnPermissionListener {
 
     // 异步任务
     private FastAsyncTask.Builder<Integer, String, String> builder;
+
+    // 权限申请
+    private FastPermission mFastPermission;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,29 +169,35 @@ public class MainActivity extends BaseAppCompatActivity {
 
             case R.id.btnPixelXmlMark:
                 // 生成屏幕分辨率(这里需要注意,6.0以上需要申请权限)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !PermissionUtil.isHasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    ToastUtil.showShort("请先允许程序写入外部存储的权限！");
-                } else {
-                    // 已经有了读写权限，开启一个子线程去制作xml文件，可以复制这些文件到你的主项目进行屏幕分辨率适配
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            final String supportDimensions[] = {"240x320", "480x800", "720x1280", "1080x1920", "1080x2220", "1440x2560"};
-                            /**
-                             *
-                             * @param UI效果图的基准宽度
-                             * @param UI效果图的基准高度
-                             * @param 自定义维度（输入需要适配的各个屏幕分辨率数组）
-                             * @param 生成的像素大小是否支持负数
-                             */
-                            PixelXmlMarkUtil.markXmlSaveToSdCard(720, 1280, supportDimensions, true);
-                            // 弹窗提醒 (允许在任意线程中弹窗)
-                            ToastUtil.showShort("屏幕分辨率文件已生成完毕，并保存在设备存储卡res目录下");
-                        }
-                    }).start();
-                }
+                mFastPermission = new FastPermission(this);
+                mFastPermission.setWhat(100);
+                mFastPermission.setReason("保存文件需要获取存储卡读写权限，请先允许权限");
+                mFastPermission.setOnPermissionListener(this);
+                mFastPermission.requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
                 break;
         }
+    }
+
+    /**
+     * 制作xml屏幕分辨率文件
+     */
+    private void markXml() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final String supportDimensions[] = {"240x320", "480x800", "720x1280", "1080x1920", "1080x2220", "1440x2560"};
+                /**
+                 *
+                 * @param UI效果图的基准宽度
+                 * @param UI效果图的基准高度
+                 * @param 自定义维度（输入需要适配的各个屏幕分辨率数组）
+                 * @param 生成的像素大小是否支持负数
+                 */
+                PixelXmlMarkUtil.markXmlSaveToSdCard(720, 1280, supportDimensions, true);
+                // 弹窗提醒 (允许在任意线程中弹窗)
+                ToastUtil.showShort("屏幕分辨率文件已生成完毕，并保存在设备存储卡res目录下");
+            }
+        }).start();
     }
 
     /**
@@ -202,6 +217,7 @@ public class MainActivity extends BaseAppCompatActivity {
         LogUtil.logDebug(log);
         log = "应用程序版本号：" + AppUtil.getVersionCode() + "\n";
         buffer.append(log);
+        log = "应用程序是否运行在后台" + AppUtil.isApplicationInBackground() + "\n";
         LogUtil.logDebug(log);
         log = "清空数据或卸载应用才会发生变化的AppUUID：" + AppUtil.getAppUUID() + "\n";
         buffer.append(log);
@@ -328,6 +344,64 @@ public class MainActivity extends BaseAppCompatActivity {
         log = "当前是否为主线程: " + ThreadUtil.isMainThread() + "\n";
         buffer.append(log);
         LogUtil.logDebug(log);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (mFastPermission != null) {
+            mFastPermission.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    @Override
+    public void onPermissionComplete(int what) {
+        // 权限已开启
+        switch (what) {
+            case 100:
+                // 已经有了读写权限，开启一个子线程去制作xml文件，可以复制这些文件到你的主项目进行屏幕分辨率适配
+                markXml();
+                break;
+        }
+    }
+
+    @Override
+    public void onPermissionTempReject(int what, String... permissions) {
+        // 权限暂时被拒绝，当用户下次点击的时候，系统将再次弹窗提醒用户申请权限
+        for (int i = 0; i < permissions.length; i++) {
+            LogUtil.logDebug("暂时被拒绝的权限: " + permissions[i]);
+        }
+        switch (what) {
+            case 100:
+                break;
+        }
+    }
+
+    @Override
+    public void onPermissionAlwaysReject(int what, String... permissions) {
+        // 权限总是被拒绝，权限系统不再弹窗提醒，需要用户到设置里去开启权限
+        for (int i = 0; i < permissions.length; i++) {
+            LogUtil.logDebug("总是被拒绝的权限: " + permissions[i]);
+        }
+        new AlertDialog.Builder(this)
+                .setMessage("权限被拒绝了，请前往设置开启权限")
+                .setPositiveButton("前往设置", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent();
+                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                        intent.setData(uri);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    }
+                })
+                .create()
+                .show();
     }
 
 }

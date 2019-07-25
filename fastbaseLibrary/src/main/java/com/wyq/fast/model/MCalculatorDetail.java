@@ -30,7 +30,7 @@ import java.io.Serializable;
  * Mortgage Calculator Detail Entity Class
  */
 
-public class MCalculatorDetail implements Serializable {
+public class MCalculatorDetail<T> implements Serializable {
 
     // Period
     private int number;
@@ -42,6 +42,9 @@ public class MCalculatorDetail implements Serializable {
     private double interest;
     // Remaining principal
     private double remainingMoney;
+
+    // Custom entity object
+    private T entity;
 
     public int getNumber() {
         return number;
@@ -81,6 +84,14 @@ public class MCalculatorDetail implements Serializable {
 
     public void setRemainingMoney(double remainingMoney) {
         this.remainingMoney = remainingMoney;
+    }
+
+    public T getEntity() {
+        return entity;
+    }
+
+    public void setEntity(T entity) {
+        this.entity = entity;
     }
 
     @Override

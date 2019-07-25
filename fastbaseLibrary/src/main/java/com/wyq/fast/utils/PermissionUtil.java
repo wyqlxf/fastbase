@@ -23,6 +23,8 @@
  */
 package com.wyq.fast.utils;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 
 import com.wyq.fast.app.FastApp;
@@ -40,16 +42,63 @@ public final class PermissionUtil {
     /**
      * return whether you have permission
      *
-     * @param permission
+     * @param permissions
      * @return
      */
-    public static boolean isHasPermission(@NonNull String permission) {
+    public static boolean isHasPermission(@NonNull String... permissions) {
         if (FastApp.getContext() != null) {
-            return ActivityCompat.checkSelfPermission(FastApp.getContext(), permission) == PackageManager.PERMISSION_GRANTED;
+            return isHasPermission(FastApp.getContext(), permissions);
         } else {
             LogUtil.logWarn(PermissionUtil.class, "context is null");
             return false;
         }
+    }
+
+    /**
+     * return whether you have permission
+     *
+     * @param context
+     * @param permissions
+     * @return
+     */
+    public static boolean isHasPermission(Context context, @NonNull String... permissions) {
+        for (String permission : permissions) {
+            if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * return whether to grant permissions
+     *
+     * @param grantResults
+     * @return
+     */
+    public static boolean isGrantPermission(int[] grantResults) {
+        for (int grantResult : grantResults) {
+            if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Do you need to explain why you apply for permission
+     *
+     * @param activity
+     * @param permissions
+     * @return
+     */
+    public static boolean isShouldShowRequestPermissionRationale(Activity activity, @NonNull String... permissions) {
+        for (String permission : permissions) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
