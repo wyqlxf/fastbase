@@ -27,13 +27,14 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.provider.Settings;
 import android.view.View;
 
+import com.wyq.fast.activity.FastBaseAppCompatActivity;
 import com.wyq.fast.core.asynctask.FastAsyncTask;
-import com.wyq.fast.core.permission.FastPermission;
 import com.wyq.fast.demo.calculator.CalculatorActivity;
 import com.wyq.fast.demo.cipher.CipherActivity;
 import com.wyq.fast.interfaces.asynctask.OnCancelled;
@@ -48,6 +49,7 @@ import com.wyq.fast.utils.LogUtil;
 import com.wyq.fast.utils.NetWorkUtil;
 import com.wyq.fast.utils.NotificationUtil;
 import com.wyq.fast.utils.ObjectValueUtil;
+import com.wyq.fast.utils.PermissionUtil;
 import com.wyq.fast.utils.PixelXmlMarkUtil;
 import com.wyq.fast.utils.ProcessUtil;
 import com.wyq.fast.utils.RandomUtil;
@@ -63,7 +65,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
 /**
@@ -71,13 +72,14 @@ import androidx.appcompat.app.AlertDialog;
  * main activity of this sample
  */
 
-public class MainActivity extends BaseAppCompatActivity implements OnPermissionListener {
+public class MainActivity extends FastBaseAppCompatActivity {
 
     // 异步任务
     private FastAsyncTask.Builder<Integer, String, String> builder;
 
-    // 权限申请
-    private FastPermission mFastPermission;
+    // 制作xml文件，权限请求码
+    private final static int requestCodeMarkXmlTemp = 1;
+    private final static int requestCodeMarkXmlAlways = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,8 +111,68 @@ public class MainActivity extends BaseAppCompatActivity implements OnPermissionL
             }
         });
 
+        // 注册权限申请监听
+        registerPermissionListener(new OnPermissionListener() {
+            @Override
+            public void onPermissionAllow(int requestCode) {
+                // 权限已允许
+                switch (requestCode) {
+                    case requestCodeMarkXmlTemp:
+                    case requestCodeMarkXmlAlways:
+                        // 已经有了读写权限，开启一个子线程去制作xml文件，可以复制这些文件到你的主项目进行屏幕分辨率适配
+                        markXml();
+                        break;
+                }
+            }
+
+            @Override
+            public void onPermissionTempReject(int tempRequestCode, String... permissions) {
+                // 权限暂时被拒绝，当用户下次点击的时候，系统将再次弹窗提醒用户申请权限
+                for (int i = 0; i < permissions.length; i++) {
+                    LogUtil.logDebug("暂时被拒绝的权限: " + permissions[i]);
+                }
+                switch (tempRequestCode) {
+                    case requestCodeMarkXmlTemp:
+                        ToastUtil.showShort("您拒绝了sd卡存储读写权限");
+                        break;
+                }
+            }
+
+            @Override
+            public void onPermissionAlwaysReject(int alwaysRequestCode, String... permissions) {
+                // 权限总是被拒绝，权限系统不再弹窗提醒，需要用户到设置里去开启权限
+                for (int i = 0; i < permissions.length; i++) {
+                    LogUtil.logDebug("总是被拒绝的权限: " + permissions[i]);
+                }
+                switch (alwaysRequestCode) {
+                    case requestCodeMarkXmlAlways:
+                        ToastUtil.showShort("您拒绝了sd卡存储读写权限，如需开启权限，需要到设置中重新开启");
+                        break;
+                }
+                new AlertDialog.Builder(MainActivity.this)
+                        .setMessage("权限被拒绝了，请前往设置开启权限")
+                        .setPositiveButton("前往设置", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent();
+                                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                                intent.setData(uri);
+                                startActivity(intent);
+                            }
+                        })
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        })
+                        .create()
+                        .show();
+            }
+        });
+
         // 延时发送一个的空消息
-        sendEmptyMessageDelayed(0, 3000);
+        sendEmptyMessageDelayed(0, 2000);
     }
 
     @OnClick({R.id.btnUtils, R.id.btnMortgageCalculator, R.id.btnCipher, R.id.btnPixelXmlMark})
@@ -169,11 +231,19 @@ public class MainActivity extends BaseAppCompatActivity implements OnPermissionL
 
             case R.id.btnPixelXmlMark:
                 // 生成屏幕分辨率(这里需要注意,6.0以上需要申请权限)
-                mFastPermission = new FastPermission(this);
-                mFastPermission.setWhat(100);
-                mFastPermission.setReason("保存文件需要获取存储卡读写权限，请先允许权限");
-                mFastPermission.setOnPermissionListener(this);
-                mFastPermission.requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !PermissionUtil.isHasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    // 设置权限请求码（权限临时遭拒后回调），如果在同一个界面中只有一处地方申请权限，可以不用设置
+                    setPermissionRequestCodeTemp(requestCodeMarkXmlTemp);
+                    // 设置权限请求码（权限总是遭拒后回调），如果在同一个界面中只有一处地方申请权限，可以不用设置
+                    setPermissionRequestCodeAlways(requestCodeMarkXmlAlways);
+                    // 在权限遭拒，下次重新申请权限的时候，如果你不需要说明申请权限的原因，可以不调用
+                    setPermissionReason("保存文件需要获取存储卡读写权限，请先允许权限");
+                    // 请求权限
+                    requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                } else {
+                    // 已经有了读写权限，开启一个子线程去制作xml文件，可以复制这些文件到你的主项目进行屏幕分辨率适配
+                    markXml();
+                }
                 break;
         }
     }
@@ -292,7 +362,7 @@ public class MainActivity extends BaseAppCompatActivity implements OnPermissionL
         /**
          * ProcessUtil类
          */
-        log = "当前是否为主进程: " + ProcessUtil.isMainProcess(getContext()) + "\n";
+        log = "当前是否为主进程: " + ProcessUtil.isMainProcess(this) + "\n";
         buffer.append(log);
         LogUtil.logDebug(log);
         log = "获取当前进程名称: " + ProcessUtil.getCurProcessName() + "\n";
@@ -344,64 +414,6 @@ public class MainActivity extends BaseAppCompatActivity implements OnPermissionL
         log = "当前是否为主线程: " + ThreadUtil.isMainThread() + "\n";
         buffer.append(log);
         LogUtil.logDebug(log);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (mFastPermission != null) {
-            mFastPermission.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
-
-    @Override
-    public void onPermissionComplete(int what) {
-        // 权限已开启
-        switch (what) {
-            case 100:
-                // 已经有了读写权限，开启一个子线程去制作xml文件，可以复制这些文件到你的主项目进行屏幕分辨率适配
-                markXml();
-                break;
-        }
-    }
-
-    @Override
-    public void onPermissionTempReject(int what, String... permissions) {
-        // 权限暂时被拒绝，当用户下次点击的时候，系统将再次弹窗提醒用户申请权限
-        for (int i = 0; i < permissions.length; i++) {
-            LogUtil.logDebug("暂时被拒绝的权限: " + permissions[i]);
-        }
-        switch (what) {
-            case 100:
-                break;
-        }
-    }
-
-    @Override
-    public void onPermissionAlwaysReject(int what, String... permissions) {
-        // 权限总是被拒绝，权限系统不再弹窗提醒，需要用户到设置里去开启权限
-        for (int i = 0; i < permissions.length; i++) {
-            LogUtil.logDebug("总是被拒绝的权限: " + permissions[i]);
-        }
-        new AlertDialog.Builder(this)
-                .setMessage("权限被拒绝了，请前往设置开启权限")
-                .setPositiveButton("前往设置", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent();
-                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package", getPackageName(), null);
-                        intent.setData(uri);
-                        startActivity(intent);
-                    }
-                })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                    }
-                })
-                .create()
-                .show();
     }
 
 }

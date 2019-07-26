@@ -30,10 +30,10 @@ package com.wyq.fast.interfaces.permission;
 
 public interface OnPermissionListener {
 
-    void onPermissionComplete(int what);
+    void onPermissionAllow(int requestCode);
 
-    void onPermissionTempReject(int what, String... permissions);
+    void onPermissionTempReject(int tempRequestCode, String... permissions);
 
-    void onPermissionAlwaysReject(int what, String... permissions);
+    void onPermissionAlwaysReject(int alwaysRequestCode, String... permissions);
 
 }

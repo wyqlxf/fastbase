@@ -27,7 +27,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.text.TextUtils;
 
 import com.wyq.fast.config.Config;
@@ -48,26 +47,16 @@ import androidx.core.app.ActivityCompat;
 
 public class FastPermission {
 
-    private int what;
-    private String reason;
     private Activity mActivity;
-    private OnPermissionListener onPermissionListener;
 
-    private final static int REQUEST_CODE_TEMP = 0;
-    private final static int REQUEST_CODE_ALWAYS = 1;
+    private String reason;
+    private int requestCodeTemp;
+    private int requestCodeAlways;
 
     public FastPermission(Activity activity) {
-        this.what = 200;
         this.mActivity = activity;
-    }
-
-    /**
-     * mark
-     *
-     * @param what
-     */
-    public void setWhat(int what) {
-        this.what = what;
+        this.requestCodeTemp = 10101;
+        this.requestCodeAlways = 10102;
     }
 
     /**
@@ -80,12 +69,21 @@ public class FastPermission {
     }
 
     /**
-     * Set permission listener
+     * Set permission request code (temporary)
      *
-     * @param onPermissionListener
+     * @param requestCodeTemp
      */
-    public void setOnPermissionListener(OnPermissionListener onPermissionListener) {
-        this.onPermissionListener = onPermissionListener;
+    public void setRequestCodeTemp(int requestCodeTemp) {
+        this.requestCodeTemp = requestCodeTemp;
+    }
+
+    /**
+     * Set the permission request code (always)
+     *
+     * @param requestCodeAlways
+     */
+    public void setRequestCodeAlways(int requestCodeAlways) {
+        this.requestCodeAlways = requestCodeAlways;
     }
 
     /**
@@ -94,30 +92,25 @@ public class FastPermission {
      * @param permissions
      */
     public void requestPermission(@NonNull final String... permissions) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !PermissionUtil.isHasPermission(mActivity, permissions)) {
-            if (PermissionUtil.isShouldShowRequestPermissionRationale(mActivity, permissions)) {
-                if (!TextUtils.isEmpty(reason)) {
-                    // Not the first time to apply for permission, you should first explain the purpose of this permission
-                    new AlertDialog.Builder(mActivity)
-                            .setMessage(reason)
-                            .setPositiveButton("好的", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    ActivityCompat.requestPermissions(mActivity, permissions, REQUEST_CODE_TEMP);
-                                }
-                            })
-                            .create()
-                            .show();
-                } else {
-                    ActivityCompat.requestPermissions(mActivity, permissions, REQUEST_CODE_TEMP);
-                }
+        if (PermissionUtil.isShouldShowRequestPermissionRationale(mActivity, permissions)) {
+            if (!TextUtils.isEmpty(reason)) {
+                // Not the first time to apply for permission, you should first explain the purpose of this permission
+                new AlertDialog.Builder(mActivity)
+                        .setMessage(reason)
+                        .setPositiveButton("好的", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ActivityCompat.requestPermissions(mActivity, permissions, requestCodeTemp);
+                            }
+                        })
+                        .create()
+                        .show();
             } else {
-                // First time to apply for permission, or the user has selected the "Don't ask again" option
-                ActivityCompat.requestPermissions(mActivity, permissions, REQUEST_CODE_ALWAYS);
+                ActivityCompat.requestPermissions(mActivity, permissions, requestCodeTemp);
             }
         } else {
-            // Already have permission
-            onPermissionListener.onPermissionComplete(what);
+            // First time to apply for permission, or the user has selected the "Don't ask again" option
+            ActivityCompat.requestPermissions(mActivity, permissions, requestCodeAlways);
         }
     }
 
@@ -126,18 +119,18 @@ public class FastPermission {
      * @param permissions
      * @param grantResults
      */
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults, OnPermissionListener listener) {
         if (PermissionUtil.isGrantPermission(grantResults)) {
             // Allow permission
-            if (onPermissionListener != null) {
-                onPermissionListener.onPermissionComplete(what);
+            if (listener != null) {
+                listener.onPermissionAllow(requestCode);
             }
         } else {
             final List<String> list = new ArrayList<>();
             for (int i = 0; i < permissions.length; i++) {
                 if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
                     // Permission denied
-                    if (requestCode == REQUEST_CODE_ALWAYS) {
+                    if (requestCode == requestCodeAlways) {
                         if (SPUtil.getInstance(Config.SP_PERMISSION_NAME).getBoolean(permissions[i], true)) {
                             // Reject permission for the first time
                             SPUtil.getInstance(Config.SP_PERMISSION_NAME).put(permissions[i], false);
@@ -145,23 +138,23 @@ public class FastPermission {
                             // The user has selected the "Don't ask again" option and needs to be processed.
                             list.add(permissions[i]);
                         }
-                    } else if (requestCode == REQUEST_CODE_TEMP) {
+                    } else if (requestCode == requestCodeTemp) {
                         // User temporarily denied permission
                         list.add(permissions[i]);
                     }
                 }
             }
-            if (onPermissionListener != null && list != null && list.size() > 0) {
+            if (listener != null && list != null && list.size() > 0) {
                 final String names[] = new String[list.size()];
                 for (int i = 0; i < list.size(); i++) {
                     names[i] = list.get(i);
                 }
-                if (requestCode == REQUEST_CODE_ALWAYS) {
+                if (requestCode == requestCodeAlways) {
                     // Permissions are always denied
-                    onPermissionListener.onPermissionAlwaysReject(what, names);
-                } else if (requestCode == REQUEST_CODE_TEMP) {
+                    listener.onPermissionAlwaysReject(requestCode, names);
+                } else if (requestCode == requestCodeTemp) {
                     // Permission is temporarily denied
-                    onPermissionListener.onPermissionTempReject(what, names);
+                    listener.onPermissionTempReject(requestCode, names);
                 }
             }
         }

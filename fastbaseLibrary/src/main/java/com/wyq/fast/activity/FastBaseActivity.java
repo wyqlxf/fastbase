@@ -28,10 +28,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
+import com.wyq.fast.core.permission.FastPermission;
 import com.wyq.fast.interfaces.handler.OnHandlerListener;
+import com.wyq.fast.interfaces.permission.OnPermissionListener;
 import com.wyq.fast.receiver.NetworkChangeReceiver;
 
 import java.lang.ref.WeakReference;
+
+import androidx.annotation.NonNull;
 
 /**
  * Author: WangYongQi
@@ -46,6 +50,11 @@ public abstract class FastBaseActivity extends Activity {
     private OnHandlerListener mOnHandlerListener;
     // Monitor network changes
     private NetworkChangeReceiver mNetworkChangeReceiver;
+
+    // Permission Request
+    private FastPermission mFastPermission;
+    // Permission listening callback
+    private OnPermissionListener mOnPermissionListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +80,18 @@ public abstract class FastBaseActivity extends Activity {
      */
     public void registerNetworkListener(NetworkChangeReceiver networkChangeReceiver) {
         mNetworkChangeReceiver = networkChangeReceiver;
+    }
+
+    /**
+     * Registration permission monitoring
+     *
+     * @param onPermissionListener
+     */
+    public void registerPermissionListener(OnPermissionListener onPermissionListener) {
+        if (mFastPermission == null) {
+            mFastPermission = new FastPermission(this);
+        }
+        mOnPermissionListener = onPermissionListener;
     }
 
     /**
@@ -186,10 +207,68 @@ public abstract class FastBaseActivity extends Activity {
 
         @Override
         public void handleMessage(Message msg) {
+            super.handleMessage(msg);
             final FastBaseActivity activity = mWeakReference.get();
             if (activity != null && activity.mOnHandlerListener != null && msg != null) {
                 activity.mOnHandlerListener.onHandleMessage(msg);
             }
+        }
+    }
+
+    /**
+     * Set the reason for permission usage
+     *
+     * @param reason
+     */
+    public void setPermissionReason(String reason) {
+        if (mFastPermission == null) {
+            mFastPermission = new FastPermission(this);
+        }
+        mFastPermission.setReason(reason);
+    }
+
+    /**
+     * Set permission request code (temporary)
+     *
+     * @param requestCode
+     */
+    public void setPermissionRequestCodeTemp(int requestCode) {
+        if (mFastPermission == null) {
+            mFastPermission = new FastPermission(this);
+        }
+        mFastPermission.setRequestCodeTemp(requestCode);
+    }
+
+    /**
+     * Set the permission request code (always)
+     *
+     * @param requestCode
+     */
+    public void setPermissionRequestCodeAlways(int requestCode) {
+        if (mFastPermission == null) {
+            mFastPermission = new FastPermission(this);
+        }
+        mFastPermission.setRequestCodeAlways(requestCode);
+    }
+
+    /**
+     * Start requesting permission
+     *
+     * @param permissions
+     */
+    public void requestPermission(@NonNull final String... permissions) {
+        if (mFastPermission == null) {
+            mFastPermission = new FastPermission(this);
+        }
+        mFastPermission.requestPermission(permissions);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // Set permission callback listener
+        if (mFastPermission != null && mOnPermissionListener != null) {
+            mFastPermission.onRequestPermissionsResult(requestCode, permissions, grantResults, mOnPermissionListener);
         }
     }
 
@@ -217,6 +296,7 @@ public abstract class FastBaseActivity extends Activity {
             mHandler.removeCallbacksAndMessages(null);
             mHandler = null;
         }
+        mFastPermission = null;
         mNetworkChangeReceiver = null;
     }
 
