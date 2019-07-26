@@ -127,6 +127,7 @@ public class FastPermission {
             }
         } else {
             final List<String> list = new ArrayList<>();
+            final List<String> listF = new ArrayList<>();
             for (int i = 0; i < permissions.length; i++) {
                 if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
                     // Permission denied
@@ -134,6 +135,7 @@ public class FastPermission {
                         if (SPUtil.getInstance(Config.SP_PERMISSION_NAME).getBoolean(permissions[i], true)) {
                             // Reject permission for the first time
                             SPUtil.getInstance(Config.SP_PERMISSION_NAME).put(permissions[i], false);
+                            listF.add(permissions[i]);
                         } else {
                             // The user has selected the "Don't ask again" option and needs to be processed.
                             list.add(permissions[i]);
@@ -144,17 +146,25 @@ public class FastPermission {
                     }
                 }
             }
-            if (listener != null && list != null && list.size() > 0) {
-                final String names[] = new String[list.size()];
-                for (int i = 0; i < list.size(); i++) {
-                    names[i] = list.get(i);
-                }
-                if (requestCode == requestCodeAlways) {
-                    // Permissions are always denied
-                    listener.onPermissionAlwaysReject(requestCode, names);
-                } else if (requestCode == requestCodeTemp) {
-                    // Permission is temporarily denied
-                    listener.onPermissionTempReject(requestCode, names);
+            if (listener != null) {
+                if (list != null && list.size() > 0) {
+                    final String names[] = new String[list.size()];
+                    for (int i = 0; i < list.size(); i++) {
+                        names[i] = list.get(i);
+                    }
+                    if (requestCode == requestCodeAlways) {
+                        // Permissions are always denied
+                        listener.onPermissionAlwaysReject(requestCode, names);
+                    } else if (requestCode == requestCodeTemp) {
+                        // Permission is temporarily denied
+                        listener.onPermissionTempReject(requestCode, names);
+                    }
+                } else if (listF != null && listF.size() > 0) {
+                    final String names[] = new String[listF.size()];
+                    for (int i = 0; i < listF.size(); i++) {
+                        names[i] = listF.get(i);
+                    }
+                    listener.onPermissionTempReject(requestCodeTemp, names);
                 }
             }
         }
