@@ -26,8 +26,11 @@ package com.wyq.fast.demo;
 import android.app.Application;
 import android.view.Gravity;
 
+import com.wyq.fast.app.AppRunningCallbacks;
 import com.wyq.fast.app.FastApp;
+import com.wyq.fast.interfaces.running.OnAppRunningListener;
 import com.wyq.fast.model.NoticeChannel;
+import com.wyq.fast.utils.LogUtil;
 import com.wyq.fast.utils.ProcessUtil;
 
 import java.util.ArrayList;
@@ -53,6 +56,18 @@ public class BaseApplication extends Application {
             FastApp.setNotificationChannel(getNoticeChannelList());
             // 设置全局Toast弹窗重力位置
             FastApp.setToastGravity(Gravity.CENTER, 0, 0);
+            // 添加App运行监听
+            AppRunningCallbacks.getInstance().addAppRunningListener(new OnAppRunningListener() {
+                @Override
+                public void onRunningInForeground() {
+                    LogUtil.logDebug("app 运行在前台");
+                }
+
+                @Override
+                public void onRunningInBackground() {
+                    LogUtil.logDebug("app 运行在后台");
+                }
+            });
         }
     }
 

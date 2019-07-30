@@ -287,7 +287,7 @@ public class MainActivity extends FastBaseAppCompatActivity {
         LogUtil.logDebug(log);
         log = "应用程序版本号：" + AppUtil.getVersionCode() + "\n";
         buffer.append(log);
-        log = "应用程序是否运行在后台" + AppUtil.isApplicationInBackground() + "\n";
+        log = "应用程序是否运行在后台" + AppUtil.isRunningInBackground() + "\n";
         LogUtil.logDebug(log);
         log = "清空数据或卸载应用才会发生变化的AppUUID：" + AppUtil.getAppUUID() + "\n";
         buffer.append(log);

@@ -160,6 +160,17 @@ public abstract class FastBaseFragmentActivity extends FragmentActivity {
     }
 
     /**
+     * remove callbacks
+     *
+     * @param runnable
+     */
+    public void removeCallbacks(Runnable runnable) {
+        if (runnable != null) {
+            getDefaultHandler().removeCallbacks(runnable);
+        }
+    }
+
+    /**
      * Remove message
      *
      * @param what

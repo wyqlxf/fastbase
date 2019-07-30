@@ -189,7 +189,7 @@ public final class AppUtil {
      *
      * @return
      */
-    public static boolean isApplicationInBackground() {
+    public static boolean isRunningInBackground() {
         ActivityManager activityManager = getActivityManager();
         if (activityManager != null) {
             List<ActivityManager.RunningTaskInfo> taskList = activityManager.getRunningTasks(1);
