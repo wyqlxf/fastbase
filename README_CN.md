@@ -21,7 +21,7 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.github.wyqlxf:fastbase:1.0.1'
+    implementation 'com.github.wyqlxf:fastbase:1.0.2'
 }
 ```
 
