@@ -29,8 +29,9 @@ import android.view.View;
  * Author:WangYongQi
  * View click callback listener
  */
+
 public interface OnItemClickListener<T> {
 
-    void onClick(View v, T t);
+    void onClick(View v, T t, int position);
 
 }
