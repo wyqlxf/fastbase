@@ -28,6 +28,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.Gravity;
 
 import com.wyq.fast.model.NoticeChannel;
@@ -55,7 +56,7 @@ public class FastApp {
     private static int toastGravity = Gravity.BOTTOM | Gravity.CENTER;
 
     // Declare a default handler
-    private static Handler handler = new Handler();
+    private static Handler handler = new Handler(Looper.getMainLooper());
 
     /**
      * initialization app
@@ -173,7 +174,7 @@ public class FastApp {
      */
     public static Handler getDefaultHandler() {
         if (handler == null) {
-            handler = new Handler();
+            handler = new Handler(Looper.getMainLooper());
         }
         return handler;
     }
