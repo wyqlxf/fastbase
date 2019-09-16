@@ -35,7 +35,6 @@ FastApp.setLogEnabled(true);
 ```
 See the [Demo](https://github.com/wyqlxf/fastbase/blob/master/app/src/main/java/com/wyq/fast/demo/MainActivity.java) file for details.　click to download [FastDemo.apk](https://raw.githubusercontent.com/wyqlxf/fastbase/master/app/release/FastDemo.apk)<br>
 <br>
-![image](https://github.com/wyqlxf/fastbase/blob/master/blob/master/image/demo_shot.png)
 
 ## License
 MIT License, See the [LICENSE](https://github.com/wyqlxf/fastbase/blob/master/LICENSE) file for details.<br>
