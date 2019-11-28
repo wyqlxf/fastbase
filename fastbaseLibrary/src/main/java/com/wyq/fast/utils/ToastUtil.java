@@ -33,6 +33,9 @@ import android.widget.Toast;
 import com.wyq.fast.app.FastApp;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 import androidx.annotation.StringRes;
 
@@ -44,6 +47,7 @@ import androidx.annotation.StringRes;
 public final class ToastUtil {
 
     private static Toast toast;
+    private static Object notificationManagerObj;
     private final static Object synObj = new Object();
     private final static Handler handler = new Handler(Looper.getMainLooper());
 
@@ -181,10 +185,45 @@ public final class ToastUtil {
             toast = Toast.makeText(FastApp.getContext(), text, duration);
             // If the SDK version of the software equal to 7.1
             if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1) {
-                hook(toast);
+                hookTNToast(toast);
+            }
+            if (!NotificationUtil.isNotificationEnabled()) {
+                hookNMToast(toast);
             }
             toast.setGravity(FastApp.getToastGravity(), FastApp.getToastXOffset(), FastApp.getToastYOffset());
             toast.show();
+        }
+    }
+
+    /**
+     * Solve the problem that Toast cannot pop up after disabling notification permissions on some models
+     *
+     * @param toast
+     */
+    private static void hookNMToast(Toast toast) {
+        try {
+            Method serviceMethod = Toast.class.getDeclaredMethod("getService");
+            serviceMethod.setAccessible(true);
+            // hook NotificationManager
+            if (notificationManagerObj == null) {
+                notificationManagerObj = serviceMethod.invoke(null);
+                Class notificationManagerClass = Class.forName("android.app.INotificationManager");
+                Object notificationManagerProxy = Proxy.newProxyInstance(toast.getClass().getClassLoader(), new Class[]{notificationManagerClass}, new InvocationHandler() {
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                        // Mandatory use of system Toast
+                        if ("enqueueToast".equals(method.getName()) || "enqueueToastEx".equals(method.getName())) {
+                            args[0] = "android";
+                        }
+                        return method.invoke(notificationManagerObj, args);
+                    }
+                });
+                Field sServiceFiled = Toast.class.getDeclaredField("sService");
+                sServiceFiled.setAccessible(true);
+                sServiceFiled.set(null, notificationManagerProxy);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -194,7 +233,7 @@ public final class ToastUtil {
      *
      * @param toast
      */
-    private static void hook(Toast toast) {
+    private static void hookTNToast(Toast toast) {
         try {
             if (toast != null && mFieldTN != null) {
                 Object object = mFieldTN.get(toast);

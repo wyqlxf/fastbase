@@ -25,8 +25,11 @@ package com.wyq.fast.utils;
 
 import android.app.AppOpsManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 
 import com.wyq.fast.app.FastApp;
 
@@ -71,6 +74,61 @@ public final class NotificationUtil {
         } else {
             LogUtil.logWarn(NotificationUtil.class, "context is null");
             return true;
+        }
+    }
+
+    /**
+     * Open notification permission settings
+     */
+    public static void openNotificationSetting() {
+        if (FastApp.getContext() != null) {
+            openNotificationSetting(FastApp.getContext().getPackageName());
+        } else {
+            LogUtil.logWarn(NotificationUtil.class, "context is null");
+        }
+    }
+
+    /**
+     * Open notification permission settings
+     *
+     * @param packageName
+     */
+    public static void openNotificationSetting(String packageName) {
+        try {
+            Intent intent = new Intent();
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, packageName);
+                FastApp.getContext().startActivity(intent);
+                return;
+            }
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+                intent.putExtra("app_package", packageName);
+                intent.putExtra("app_uid", FastApp.getContext().getApplicationInfo().uid);
+                FastApp.getContext().startActivity(intent);
+                return;
+            }
+            if (android.os.Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                intent.addCategory(Intent.CATEGORY_DEFAULT);
+                intent.setData(Uri.parse("package:" + packageName));
+                FastApp.getContext().startActivity(intent);
+                return;
+            }
+            if (Build.VERSION.SDK_INT >= 9) {
+                intent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+                intent.setData(Uri.fromParts("package", packageName, null));
+                FastApp.getContext().startActivity(intent);
+                return;
+            }
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setClassName("com.android.settings", "com.android.setting.InstalledAppDetails");
+            intent.putExtra("com.android.settings.ApplicationPkgName", packageName);
+            FastApp.getContext().startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
