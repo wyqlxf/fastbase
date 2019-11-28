@@ -186,8 +186,6 @@ public abstract class FastBaseWebActivity extends FastBaseAppCompatActivity {
         if (webView != null) {
             // Execute your own life cycle
             webView.onResume();
-            // Restore interaction with JS
-            webView.getSettings().setJavaScriptEnabled(true);
         }
     }
 
@@ -197,8 +195,6 @@ public abstract class FastBaseWebActivity extends FastBaseAppCompatActivity {
         if (webView != null) {
             // Execute your own life cycle
             webView.onPause();
-            // Disable interaction with JS to prevent js from being released in the background
-            webView.getSettings().setJavaScriptEnabled(false);
         }
     }
 
