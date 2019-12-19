@@ -28,6 +28,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Toast;
 
 import com.wyq.fast.app.FastApp;
@@ -47,8 +48,10 @@ import androidx.annotation.StringRes;
 public final class ToastUtil {
 
     private static Toast toast;
+    private static Toast toastView;
     private static Object notificationManagerObj;
     private final static Object synObj = new Object();
+    private final static Object synObjView = new Object();
     private final static Handler handler = new Handler(Looper.getMainLooper());
 
     /**
@@ -169,7 +172,6 @@ public final class ToastUtil {
         }
     }
 
-
     /**
      * Pop-up window showing toast
      *
@@ -284,6 +286,59 @@ public final class ToastUtil {
                 // Need to delegate to the original Handler to execute
                 handler.handleMessage(msg);
             }
+        }
+    }
+
+    public static void showShortView(View view) {
+        showView(view, Toast.LENGTH_SHORT);
+    }
+
+    public static void showLongView(View view) {
+        showView(view, Toast.LENGTH_LONG);
+    }
+
+    private static void showView(final View view, final int duration) {
+        if (FastApp.getContext() != null) {
+            if (null != view) {
+                // If it is the main thread
+                if (ThreadUtil.isMainThread()) {
+                    showCustomizeView(view, duration);
+                } else {
+                    Runnable callbackRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            // Perform tasks in the main thread
+                            showCustomizeView(view, duration);
+                        }
+                    };
+                    handler.post(callbackRunnable);
+                }
+            } else {
+                LogUtil.logWarn(ToastUtil.class, "view is null");
+            }
+        } else {
+            LogUtil.logWarn(ToastUtil.class, "context is null");
+        }
+    }
+
+    private static void showCustomizeView(final View view, int duration) {
+        synchronized (synObjView) {
+            if (toastView != null) {
+                toastView.cancel();
+                toastView = null;
+            }
+            toastView = new Toast(FastApp.getContext());
+            toastView.setView(view);
+            toastView.setDuration(duration);
+            // If the SDK version of the software equal to 7.1
+            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1) {
+                hookTNToast(toastView);
+            }
+            if (!NotificationUtil.isNotificationEnabled()) {
+                hookNMToast(toastView);
+            }
+            toastView.setGravity(FastApp.getToastGravity(), FastApp.getToastXOffset(), FastApp.getToastYOffset());
+            toastView.show();
         }
     }
 
