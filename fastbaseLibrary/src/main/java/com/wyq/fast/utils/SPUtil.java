@@ -255,7 +255,7 @@ public final class SPUtil {
             if (preferences.contains(key)) {
                 editor.remove(key);
             }
-            editor.putFloat(key, value);
+            editor.putLong(key, value);
             editor.commit();
         } else {
             LogUtil.logWarn(SPUtil.class, "key is null");
