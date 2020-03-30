@@ -179,21 +179,27 @@ public final class ToastUtil {
      * @param duration
      */
     private static void showToast(final CharSequence text, int duration) {
-        synchronized (synObj) {
-            if (toast != null) {
-                toast.cancel();
-                toast = null;
+        try {
+            synchronized (synObj) {
+                if (toast != null) {
+                    toast.cancel();
+                    toast = null;
+                }
+                toast = Toast.makeText(FastApp.getContext(), text, duration);
+                // If the SDK version of the software equal to 7.1
+                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1) {
+                    hookTNToast(toast);
+                }
+                if (!NotificationUtil.isNotificationEnabled()) {
+                    hookNMToast(toast);
+                }
+                if (toast != null) {
+                    toast.setGravity(FastApp.getToastGravity(), FastApp.getToastXOffset(), FastApp.getToastYOffset());
+                    toast.show();
+                }
             }
-            toast = Toast.makeText(FastApp.getContext(), text, duration);
-            // If the SDK version of the software equal to 7.1
-            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1) {
-                hookTNToast(toast);
-            }
-            if (!NotificationUtil.isNotificationEnabled()) {
-                hookNMToast(toast);
-            }
-            toast.setGravity(FastApp.getToastGravity(), FastApp.getToastXOffset(), FastApp.getToastYOffset());
-            toast.show();
+        } catch (Exception ex) {
+            LogUtil.logError(ToastUtil.class, "showToast:" + ex.toString());
         }
     }
 
