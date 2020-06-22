@@ -210,6 +210,9 @@ public final class ToastUtil {
      */
     private static void hookNMToast(Toast toast) {
         try {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+                return;
+            }
             Method serviceMethod = Toast.class.getDeclaredMethod("getService");
             serviceMethod.setAccessible(true);
             // hook NotificationManager
