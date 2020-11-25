@@ -28,6 +28,9 @@ import android.util.Log;
 
 import com.wyq.fast.app.FastApp;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 /**
  * Author: WangYongQi
  * Log output
@@ -37,6 +40,9 @@ public final class LogUtil {
 
     // Log label name
     private static final String logTagName = "TagFast";
+    private static final int JSON_INDENT = 2;
+    private static final int CHUNK_SIZE = 4000;
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
     public static void logVerbose(String string) {
         if (FastApp.isDebugLog()) {
@@ -120,6 +126,57 @@ public final class LogUtil {
             } else {
                 Log.e(logTagName, className + ":" + string);
             }
+        }
+    }
+
+    /**
+     * @param url
+     * @param params
+     * @param json
+     */
+    public synchronized static void logJson(String url, String params, String json) {
+        if (FastApp.isDebugLog()) {
+            String message = "Invalid Json";
+            try {
+                if (!TextUtils.isEmpty(json)) {
+                    json = json.trim();
+                    if (json.startsWith("{")) {
+                        JSONObject jsonObject = new JSONObject(json);
+                        message = jsonObject.toString(JSON_INDENT);
+                    } else if (json.startsWith("[")) {
+                        JSONArray jsonArray = new JSONArray(json);
+                        message = jsonArray.toString(JSON_INDENT);
+                    }
+                }
+            } catch (Exception e) {
+            }
+            Log.e(logTagName, "╔═══════════════════════════════════════════════════════════════════════════════════════");
+            Log.e(logTagName, "║ " + url);
+            if (!TextUtils.isEmpty(params)) {
+                String[] lines = params.split(LINE_SEPARATOR);
+                for (String line : lines) {
+                    Log.e(logTagName, "║ " + line);
+                }
+            }
+            Log.e(logTagName, "║-------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+            byte[] bytes = message.getBytes();
+            int length = bytes.length;
+            if (length > CHUNK_SIZE) {
+                for (int i = 0; i < length; i += CHUNK_SIZE) {
+                    int count = Math.min(length - i, CHUNK_SIZE);
+                    String chunk = new String(bytes, i, count);
+                    String[] lines = chunk.split(LINE_SEPARATOR);
+                    for (String line : lines) {
+                        Log.e(logTagName, "║ " + line);
+                    }
+                }
+            } else {
+                String[] lines = message.split(LINE_SEPARATOR);
+                for (String line : lines) {
+                    Log.e(logTagName, "║ " + line);
+                }
+            }
+            Log.e(logTagName, "╚═══════════════════════════════════════════════════════════════════════════════════════");
         }
     }
 
