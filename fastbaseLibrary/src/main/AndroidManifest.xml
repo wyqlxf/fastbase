@@ -7,8 +7,6 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
-    <!-- 针对 Android 9 或更高版本并使用前台服务 -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <!-- 适配 Android 8.0 -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <!-- 允许程序在手机屏幕关闭后后台进程仍然运行 -->
