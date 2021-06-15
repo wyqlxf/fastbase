@@ -24,6 +24,7 @@
 package com.wyq.fast.utils;
 
 import android.app.AppOpsManager;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -53,26 +54,47 @@ public final class NotificationUtil {
      */
     public static boolean isNotificationEnabled() {
         if (FastApp.getContext() != null) {
-            ApplicationInfo appInfo = FastApp.getContext().getApplicationInfo();
-            String pkg = FastApp.getContext().getApplicationContext().getPackageName();
-            int uid = appInfo.uid;
-            Class appOpsClass;
-            try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    appOpsClass = Class.forName(AppOpsManager.class.getName());
-                    Method checkOpNoThrowMethod = appOpsClass.getMethod(CHECK_OP_NO_THROW, Integer.TYPE, Integer.TYPE, String.class);
-                    Field opPostNotificationValue = appOpsClass.getDeclaredField(OP_POST_NOTIFICATION);
-                    int value = (int) opPostNotificationValue.get(Integer.class);
-                    AppOpsManager mAppOps = (AppOpsManager) FastApp.getContext().getSystemService(Context.APP_OPS_SERVICE);
-                    return ((int) checkOpNoThrowMethod.invoke(mAppOps, value, uid, pkg) == AppOpsManager.MODE_ALLOWED);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                ApplicationInfo appInfo = FastApp.getContext().getApplicationInfo();
+                String pkg = FastApp.getContext().getApplicationContext().getPackageName();
+                int uid = appInfo.uid;
+                Class appOpsClass;
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        appOpsClass = Class.forName(AppOpsManager.class.getName());
+                        Method checkOpNoThrowMethod = appOpsClass.getMethod(CHECK_OP_NO_THROW, Integer.TYPE, Integer.TYPE, String.class);
+                        Field opPostNotificationValue = appOpsClass.getDeclaredField(OP_POST_NOTIFICATION);
+                        int value = (int) opPostNotificationValue.get(Integer.class);
+                        AppOpsManager mAppOps = (AppOpsManager) FastApp.getContext().getSystemService(Context.APP_OPS_SERVICE);
+                        return ((int) checkOpNoThrowMethod.invoke(mAppOps, value, uid, pkg) == AppOpsManager.MODE_ALLOWED);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    LogUtil.logError(NotificationUtil.class, "" + e.toString());
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                LogUtil.logError(NotificationUtil.class, "" + e.toString());
+                return true;
+            } else {
+                return isEnableV26(FastApp.getContext());
             }
-            return false;
         } else {
             LogUtil.logWarn(NotificationUtil.class, "context is null");
+            return true;
+        }
+    }
+
+    private static boolean isEnableV26(Context context) {
+        ApplicationInfo appInfo = context.getApplicationInfo();
+        String pkg = context.getApplicationContext().getPackageName();
+        int uid = appInfo.uid;
+        try {
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            Method sServiceField = notificationManager.getClass().getDeclaredMethod("getService");
+            sServiceField.setAccessible(true);
+            Object sService = sServiceField.invoke(notificationManager);
+            Method method = sService.getClass().getDeclaredMethod("areNotificationsEnabledForPackage", String.class, Integer.TYPE);
+            method.setAccessible(true);
+            return (boolean) method.invoke(sService, pkg, uid);
+        } catch (Exception e) {
             return true;
         }
     }
