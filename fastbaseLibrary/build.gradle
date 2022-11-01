@@ -34,9 +34,12 @@ dependencies {
 
 publishing {
     publications {
-        maven(MavenPublication) {
-		from components.java
-        }
+        release(MavenPublication) {
+            from components.release
+            groupId = "com.wyq.fast"
+            artifactId = "fastbaseLibrary"
+            version = "1.1.2"
+	}
     }
 }
 
