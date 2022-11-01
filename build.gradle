@@ -24,14 +24,6 @@ allprojects {
     }
 }
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-		from components.java
-        }
-    }
-}
-
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
