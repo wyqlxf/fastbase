@@ -1,7 +1,10 @@
-plugins {
-    id 'com.android.library'
-    id 'maven-publish'
-}
+//plugins {
+//    id 'com.android.library'
+//    id 'maven-publish'
+//}
+
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
 group = 'com.github.wyqlxf'
 
 android {
